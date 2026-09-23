@@ -510,7 +510,7 @@ def run_experiment_5():
     train_sizes = np.linspace(0.1, 1.0, 6)
 
     for ax, (m_name, color) in zip(axes, zip(model_names, colors_list)):
-        train_sizes_abs, train_scores, test_scores = learning_curve(
+        lc_res = learning_curve(
             best_models[m_name],
             X_train_scaled,
             y_train,
@@ -520,6 +520,9 @@ def run_experiment_5():
             n_jobs=1,
             random_state=42
         )
+        train_sizes_abs = lc_res[0]
+        train_scores = lc_res[1]
+        test_scores = lc_res[2]
         
         train_mean = np.mean(train_scores, axis=1)
         train_std = np.std(train_scores, axis=1)
