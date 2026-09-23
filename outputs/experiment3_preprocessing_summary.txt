@@ -1,0 +1,38 @@
+EXPERIMENT 3: DATA PRE-PROCESSING SUMMARY REPORT
+============================================================
+
+1. Dataset: Breast Cancer Wisconsin (Diagnostic)
+   - Initial Shape: (569, 32)
+   - Cleaned Feature Shape: (569, 30)
+   - Total Samples: 569
+   - Diagnostic Features: 30
+
+2. Data Hygiene:
+   - Missing Values: 0
+   - Duplicate Records: 0
+   - Metadata Dropped: 'id', unnamed columns
+
+3. Target Encoding:
+   - Mapping: 'M' -> 1 (Malignant, Positive Class), 'B' -> 0 (Benign, Negative Class)
+   - Class Distribution: Benign = 357 (62.74%), Malignant = 212 (37.26%)
+   - Class Imbalance Ratio: 1.68:1 (Benign : Malignant)
+   - Recommended Class Weight (pos_weight): 1.684
+
+4. Stratified Dataset Partitions:
+   - Training Set (80%):   455 samples (Benign: 285, Malignant: 170)
+   - Validation Set (10%): 57 samples (Benign: 36, Malignant: 21)
+   - Test Set (10%):       57 samples (Benign: 36, Malignant: 21)
+
+5. Feature Standardization Pipeline:
+   - Method: StandardScaler (Z-score normalization: z = (x - u) / s)
+   - Data Leakage Prevention: Fitted STRICTLY on X_train only; X_val and X_test transformed using training parameters.
+   - Persisted Scaler File: outputs/breast_cancer_scaler.pkl
+
+6. Processed Data Artifacts:
+   - C:\Users\rahul\OneDrive\Desktop\7th sem\Health_Project_3_Breast_Cancer\data\processed\X_train_scaled.csv
+   - C:\Users\rahul\OneDrive\Desktop\7th sem\Health_Project_3_Breast_Cancer\data\processed\X_val_scaled.csv
+   - C:\Users\rahul\OneDrive\Desktop\7th sem\Health_Project_3_Breast_Cancer\data\processed\X_test_scaled.csv
+   - C:\Users\rahul\OneDrive\Desktop\7th sem\Health_Project_3_Breast_Cancer\data\processed\train_preprocessed.csv
+   - C:\Users\rahul\OneDrive\Desktop\7th sem\Health_Project_3_Breast_Cancer\data\processed\val_preprocessed.csv
+   - C:\Users\rahul\OneDrive\Desktop\7th sem\Health_Project_3_Breast_Cancer\data\processed\test_preprocessed.csv
+   - C:\Users\rahul\OneDrive\Desktop\7th sem\Health_Project_3_Breast_Cancer\data\processed\breast_cancer_preprocessed.csv

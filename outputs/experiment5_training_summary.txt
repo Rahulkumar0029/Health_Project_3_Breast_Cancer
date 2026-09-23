@@ -1,0 +1,36 @@
+CSE4001 EXPERIMENT 5: MODEL TRAINING & HYPERPARAMETER TUNING SUMMARY
+================================================================================
+
+[Logistic Regression] Best Parameters: {'C': 1.0, 'class_weight': None, 'solver': 'lbfgs'}
+  - 5-Fold CV ROC-AUC:   0.9958 (+/- 0.0047)
+  - 5-Fold CV Recall:    0.9529 (+/- 0.0399)
+  - 5-Fold CV Precision: 0.9771 (+/- 0.0280)
+  - 5-Fold CV F1-Score:  0.9640 (+/- 0.0207)
+  - 5-Fold CV Accuracy:  0.9736 (+/- 0.0149)
+  - Tuning Duration:     4.87 seconds
+
+[Support Vector Machine] Best Parameters: {'C': 5.0, 'class_weight': None, 'gamma': 0.01, 'kernel': 'rbf'}
+  - 5-Fold CV ROC-AUC:   0.9960 (+/- 0.0050)
+  - 5-Fold CV Recall:    0.9471 (+/- 0.0432)
+  - 5-Fold CV Precision: 0.9889 (+/- 0.0222)
+  - 5-Fold CV F1-Score:  0.9666 (+/- 0.0185)
+  - 5-Fold CV Accuracy:  0.9758 (+/- 0.0128)
+  - Tuning Duration:     29.49 seconds
+
+[Random Forest] Best Parameters: {'class_weight': 'balanced', 'max_depth': 12, 'max_features': 'log2', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 50}
+  - 5-Fold CV ROC-AUC:   0.9913 (+/- 0.0048)
+  - 5-Fold CV Recall:    0.9412 (+/- 0.0263)
+  - 5-Fold CV Precision: 0.9469 (+/- 0.0219)
+  - 5-Fold CV F1-Score:  0.9439 (+/- 0.0218)
+  - 5-Fold CV Accuracy:  0.9582 (+/- 0.0162)
+  - Tuning Duration:     625.13 seconds
+
+================================================================================
+VALIDATION SET (N=57) METRICS COMPARISON TABLE
+--------------------------------------------------------------------------------
+Model Name                | Acc (%)  | Recall   | Spec     | Prec     | F1       | ROC-AUC 
+--------------------------------------------------------------------------------
+Logistic Regression       | 94.74    | 85.71    | 100.00   | 100.00   | 0.9231   | 0.9934  
+Support Vector Machine    | 96.49    | 90.48    | 100.00   | 100.00   | 0.9500   | 0.9934  
+Random Forest             | 96.49    | 95.24    | 97.22    | 95.24    | 0.9524   | 0.9947  
+================================================================================

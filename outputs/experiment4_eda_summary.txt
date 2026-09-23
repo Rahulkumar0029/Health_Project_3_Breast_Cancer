@@ -1,0 +1,50 @@
+===========================================================================
+EXPERIMENT 4: EXPLORATORY DATA ANALYSIS (EDA) SUMMARY
+Health-Project 3: Breast Cancer Detection
+===========================================================================
+
+Dataset Shape: 569 samples, 31 features
+Class Distribution: Benign = 357 (62.74%), Malignant = 212 (37.26%)
+Imbalance Ratio: 1.684 : 1
+
+Highly Correlated Feature Pairs (|r| > 0.90):
+  - perimeter_mean               <--> radius_mean                 : r = 0.9979
+  - area_mean                    <--> radius_mean                 : r = 0.9874
+  - area_mean                    <--> perimeter_mean              : r = 0.9865
+  - concave_points_mean          <--> concavity_mean              : r = 0.9214
+  - perimeter_se                 <--> radius_se                   : r = 0.9728
+  - area_se                      <--> radius_se                   : r = 0.9518
+  - area_se                      <--> perimeter_se                : r = 0.9377
+  - radius_worst                 <--> radius_mean                 : r = 0.9695
+  - radius_worst                 <--> perimeter_mean              : r = 0.9695
+  - radius_worst                 <--> area_mean                   : r = 0.9627
+  - texture_worst                <--> texture_mean                : r = 0.9120
+  - perimeter_worst              <--> radius_mean                 : r = 0.9651
+  - perimeter_worst              <--> perimeter_mean              : r = 0.9704
+  - perimeter_worst              <--> area_mean                   : r = 0.9591
+  - perimeter_worst              <--> radius_worst                : r = 0.9937
+  - area_worst                   <--> radius_mean                 : r = 0.9411
+  - area_worst                   <--> perimeter_mean              : r = 0.9415
+  - area_worst                   <--> area_mean                   : r = 0.9592
+  - area_worst                   <--> radius_worst                : r = 0.9840
+  - area_worst                   <--> perimeter_worst             : r = 0.9776
+  - concave_points_worst         <--> concave_points_mean         : r = 0.9102
+
+Top 10 Diagnostic Correlates with Malignancy (Target = 1):
+  - concave_points_worst        : r = 0.7936
+  - perimeter_worst             : r = 0.7829
+  - concave_points_mean         : r = 0.7766
+  - radius_worst                : r = 0.7765
+  - perimeter_mean              : r = 0.7426
+  - area_worst                  : r = 0.7338
+  - radius_mean                 : r = 0.7300
+  - area_mean                   : r = 0.7090
+  - concavity_mean              : r = 0.6964
+  - concavity_worst             : r = 0.6596
+
+Lowest Correlated Features:
+  - fractal_dimension_se        : r = 0.0780
+  - symmetry_se                 : r = -0.0065
+  - texture_se                  : r = -0.0083
+  - fractal_dimension_mean      : r = -0.0128
+  - smoothness_se               : r = -0.0670
