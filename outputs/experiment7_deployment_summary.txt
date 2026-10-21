@@ -1,0 +1,40 @@
+EXPERIMENT 7: FASTAPI SCORING SERVICE DEPLOYMENT & LIS INTEGRATION REPORT
+=====================================================================================
+
+SUMMARY OF ENDPOINT BENCHMARK RESULTS:
+1. Service Status: UP & HEALTHY
+2. Single Inference Latency: 33.73 ms (Target SLA: <200 ms)
+3. Batch Throughput: 0.72 ms for 10 biopsy records
+4. Benign Patient Classification: Benign (NORMAL_QUEUE)
+5. Malignant Patient Classification: Malignant (PRIORITY_PATHOLOGIST_REVIEW)
+6. LIS Webhook Routing: URGENT_PRIORITY_CYTOPATHOLOGY_WORKLIST
+
+SAMPLE REQUEST/RESPONSE AUDIT:
+{
+  "sample_id": "PT-MALIGNANT-002",
+  "predicted_class": 1,
+  "diagnosis_label": "Malignant",
+  "malignancy_probability": 1.0,
+  "confidence_category": "High Risk Malignancy",
+  "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW",
+  "top_contributing_biomarkers": [
+    {
+      "biomarker": "compactness_mean",
+      "standardized_zscore": 3.227,
+      "raw_value": 0.2776
+    },
+    {
+      "biomarker": "symmetry_worst",
+      "standardized_zscore": 2.679,
+      "raw_value": 0.4601
+    },
+    {
+      "biomarker": "perimeter_se",
+      "standardized_zscore": 2.677,
+      "raw_value": 8.589
+    }
+  ],
+  "inference_latency_ms": 0.732,
+  "model_version": "1.0.0",
+  "timestamp": "2026-10-21T04:29:10.093489Z"
+}

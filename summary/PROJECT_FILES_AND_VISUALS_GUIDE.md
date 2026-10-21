@@ -1,19 +1,19 @@
-# Project Summary & File Index: Breast Cancer Detection System
+# Project Summary & Complete File Index: Breast Cancer Detection System
 **Course:** CSE4001 — Applications of Machine Learning in Industry  
 **Domain:** Health-Project 3 (Breast Cancer Wisconsin Diagnostic)  
-**Scope:** Experiments 1 to 5 Complete Documentation & Visuals
+**Scope:** Complete End-to-End Documentation, Pipelines, Visuals & Deployment (Experiments 1 to 8)
 
 ---
 
-## 📁 1. Project Directory Structure & Purpose of Every File
+## 📁 1. Master Repository Directory Structure & File Map
 
 ```
 Health_Project_3_Breast_Cancer/
 │
 ├── data/                                 <-- Raw & Processed Datasets
 │   ├── breast_cancer.csv                 <-- Original WDBC dataset (569 rows, 32 columns)
-│   ├── wdbc.data                         <-- Raw UCI repository file
-│   └── processed/                        <-- Preprocessed & Partitioned datasets (from Exp 3)
+│   ├── wdbc.data                         <-- Raw UCI repository source file
+│   └── processed/                        <-- Preprocessed & Partitioned datasets (Exp 3)
 │       ├── breast_cancer_preprocessed.csv<-- Cleaned, target-encoded dataset (no ID, no nulls)
 │       ├── train_preprocessed.csv        <-- 80% Training partition (455 samples)
 │       ├── val_preprocessed.csv          <-- 10% Validation partition (57 samples)
@@ -25,26 +25,37 @@ Health_Project_3_Breast_Cancer/
 │       ├── y_val.csv                     <-- Validation labels
 │       └── y_test.csv                    <-- Test labels
 │
-├── models/                               <-- Trained Model Artifacts & Metadata (from Exp 5)
-│   ├── logistic_regression_best.pkl      <-- Serialized L2-Regularized Logistic Regression model
+├── models/                               <-- Trained Model Artifacts & Checkpoints
+│   ├── champion_model.pkl                <-- Production Champion: Support Vector Machine (RBF)
+│   ├── voting_ensemble_model.pkl         <-- Soft-Voting Ensemble (LR + SVM + RF)
 │   ├── svm_rbf_best.pkl                  <-- Serialized Support Vector Classifier (RBF Kernel)
 │   ├── random_forest_best.pkl            <-- Serialized Random Forest Classifier (50 Trees)
+│   ├── logistic_regression_best.pkl      <-- Serialized L2-Regularized Logistic Regression
 │   ├── dummy_baseline.pkl                <-- Zero-Rule majority baseline heuristic
 │   ├── breast_cancer_scaler.pkl          <-- Saved StandardScaler object (fit on train)
-│   └── model_training_summary.json       <-- Machine-readable JSON training metrics & best params
+│   ├── model_metadata.json               <-- Complete production model metadata & provenance
+│   └── model_training_summary.json       <-- Exp 5 Cross-validation training logs
 │
-├── notebooks/                            <-- Python Executable Scripts for Experiments
-│   ├── experiment_2_dataset_audit.py     <-- Script for Exp 2 data audit & validation
-│   ├── experiment_3_data_preprocessing.py<-- Script for Exp 3 preprocessing, scaling & splitting
-│   ├── experiment_4_data_exploration.py  <-- Script for Exp 4 full EDA & figure generation
-│   ├── experiment_5_model_training.py    <-- Script for Exp 5 model training, CV & tuning
-│   └── generate_experiment_pdf.py        <-- Automated ReportLab PDF generator for Exps 1-5
+├── deployment/                           <-- Enterprise Deployment & LIS Integration (Exp 7)
+│   ├── app.py                            <-- Production FastAPI scoring service & LIS webhook
+│   └── test_api.py                       <-- Automated API verification & test suite
 │
-├── outputs/                              <-- High-Resolution Generated Figures & Artifacts
+├── notebooks/                            <-- Python Executable Pipelines for All Experiments
+│   ├── experiment_2_dataset_audit.py     <-- Exp 2 data audit & provenance script
+│   ├── experiment_3_data_preprocessing.py<-- Exp 3 cleaning, scaling & stratified splitting
+│   ├── experiment_4_data_exploration.py  <-- Exp 4 full 18-step EDA & figure generation
+│   ├── experiment_5_model_training.py    <-- Exp 5 training, Stratified 5-Fold CV & tuning
+│   ├── experiment_6_model_evaluation.py  <-- Exp 6 test set evaluation & error analysis
+│   ├── experiment_7_deployment.py        <-- Exp 7 deployment benchmarking & test runner
+│   ├── experiment_8_monitoring_drift.py  <-- Exp 8 data drift monitoring & maintenance pipeline
+│   ├── generate_experiment_pdf.py        <-- ReportLab PDF compiler for all Experiments 1-8
+│   └── generate_word_doc.py              <-- Word document generator
+│
+├── outputs/                              <-- High-Resolution Figures, Logs & Artifacts
 │   ├── experiment2_audit_summary.txt     <-- Exp 2 data audit findings text log
 │   ├── experiment2_class_distribution.png<-- Exp 2 raw target class distribution chart
 │   ├── experiment3_class_distribution.png<-- Exp 3 stratified train/val/test split verification
-│   ├── experiment3_scaling_comparison.png<-- Exp 3 Before vs After Z-score standardization densities
+│   ├── experiment3_scaling_comparison.png<-- Exp 3 Before vs After Z-score standardization
 │   ├── experiment3_preprocessing_summary.txt <-- Exp 3 split sizes & class ratio logs
 │   ├── experiment4_class_distribution.png<-- Exp 4 Benign (357) vs Malignant (212) bar chart
 │   ├── experiment4_feature_distributions.png <-- Exp 4 10-feature histograms with KDE curves
@@ -58,72 +69,88 @@ Health_Project_3_Breast_Cancer/
 │   ├── experiment4_eda_summary.txt           <-- Exp 4 Statistical summary of correlations & metrics
 │   ├── experiment5_cv_comparison.png         <-- Exp 5 5-Fold Stratified CV benchmark across models
 │   ├── experiment5_confusion_matrices.png    <-- Exp 5 Confusion Matrices on Validation set (N=57)
-│   ├── experiment5_roc_curves.png            <-- Exp 5 Validation ROC curves (AUC comparison)
-│   ├── experiment5_precision_recall_curves.png<-- Exp 5 Validation PR curves vs prevalence baseline
-│   ├── experiment5_feature_importance.png    <-- Exp 5 RF Gini Importance vs LR feature weights
-│   ├── experiment5_learning_curves.png       <-- Exp 5 Sample size vs ROC-AUC learning curves
-│   ├── experiment5_hyperparameter_heatmaps.png<-- Exp 5 SVM C vs Gamma hyperparameter 2D surface
-│   └── experiment5_training_summary.txt      <-- Exp 5 Complete CV & validation metrics text log
+│   ├── experiment5_roc_curves.png            <-- Exp 5 Validation ROC curves (All >0.99 AUC)
+│   ├── experiment5_precision_recall_curves.png <-- Exp 5 Validation Precision-Recall curves
+│   ├── experiment5_feature_importance.png    <-- Exp 5 RF Gini Importance vs LR Weights
+│   ├── experiment5_learning_curves.png       <-- Exp 5 Learning Curves (Diagnosing bias/variance)
+│   ├── experiment5_hyperparameter_heatmaps.png <-- Exp 5 SVM (C vs gamma) Grid Search heatmaps
+│   ├── experiment5_training_summary.txt      <-- Exp 5 Complete text summary of CV and Val results
+│   ├── experiment6_test_roc_curves.png       <-- Exp 6 Unseen test set ROC curves (AUC=1.000)
+│   ├── experiment6_test_pr_curves.png        <-- Exp 6 Unseen test set Precision-Recall curves
+│   ├── experiment6_confusion_matrices.png    <-- Exp 6 Test set 2x2 confusion matrices (Zero FN!)
+│   ├── experiment6_threshold_tuning.png      <-- Exp 6 Decision threshold sensitivity sweep curve
+│   ├── experiment6_error_analysis.png        <-- Exp 6 Discrepant case morphometric Z-score profiles
+│   ├── experiment6_model_comparison.png      <-- Exp 6 Multi-metric bar comparison across all models
+│   ├── experiment6_evaluation_summary.json   <-- Exp 6 Complete JSON evaluation manifest
+│   ├── experiment6_evaluation_summary.txt    <-- Exp 6 Formatted text evaluation summary
+│   ├── experiment7_deployment_benchmarks.png <-- Exp 7 Latency histogram (P95=9.75ms) & LIS queue
+│   ├── sample_request_response_log.json      <-- Exp 7 Audited API request/response JSON payload log
+│   ├── deployment_request_response.log       <-- Exp 7 Live transaction log with timestamps & SHA-256
+│   ├── experiment7_deployment_summary.txt    <-- Exp 7 Formatted deployment report
+│   ├── experiment8_drift_analysis.png        <-- Exp 8 Statistical drift plots (KS-test & PSI charts)
+│   ├── experiment8_monitoring_summary.json   <-- Exp 8 Monitoring & drift audit JSON manifest
+│   └── experiment8_monitoring_summary.txt    <-- Exp 8 Continuous update & maintenance text summary
 │
-├── report/                               <-- Full Markdown Lab Reports
-│   ├── Experiment_1_Objective_Definition.md
-│   ├── Experiment_2_Dataset_Details.md
-│   ├── Experiment_3_Data_Preprocessing.md
-│   ├── Experiment_4_Data_Exploration_EDA.md
-│   └── Experiment_5_Model_Training.md
+├── report/                               <-- Comprehensive Markdown Academic Reports
+│   ├── Experiment_1_Objective_Definition.md  <-- 1-page Problem Definition & KPI Document
+│   ├── Experiment_2_Dataset_Details.md       <-- Dataset Description & Provenance Report
+│   ├── Experiment_3_Data_Preprocessing.md    <-- Preprocessing & Zero-Leakage Pipeline Report
+│   ├── Experiment_4_Data_Exploration_EDA.md  <-- Comprehensive 18-step EDA Report
+│   ├── Experiment_5_Model_Training.md        <-- Model Training, 5-Fold CV & Tuning Report
+│   ├── Experiment_6_Model_Evaluation.md      <-- Test Evaluation, Error Analysis & Selection Report
+│   ├── Experiment_7_Deployment.md            <-- FastAPI Scoring Service & LIS Integration Report
+│   └── Experiment_8_Continuous_Update_Maintenance.md <-- Monitoring, Drift & Maintenance Plan
 │
-├── experiment_pdfs/                      <-- Ready-to-Submit Academic PDFs
+├── experiment_pdfs/                      <-- Publication-Quality ReportLab Generated PDFs (All 8 Exps)
 │   ├── Experiment_1_Objective_Definition.pdf
 │   ├── Experiment_2_Dataset_Details.pdf
 │   ├── Experiment_3_Data_Preprocessing.pdf
 │   ├── Experiment_4_Data_Exploration_EDA.pdf
-│   └── Experiment_5_Model_Training.pdf
+│   ├── Experiment_5_Model_Training.pdf
+│   ├── Experiment_6_Model_Evaluation.pdf
+│   ├── Experiment_7_Deployment.pdf
+│   └── Experiment_8_Continuous_Update_Maintenance.pdf
 │
-└── summary/                              <-- Viva & Lab Guide (This Folder)
-    ├── VIVA_AND_EXPERIMENT_EXPLANATION_GUIDE.md
-    └── PROJECT_FILES_AND_VISUALS_GUIDE.md
+└── summary/                              <-- Master Presentation & Viva Resources
+    ├── FULL_VIVA_COMPLETE_MASTER_GUIDE.md    <-- Master Comprehensive Viva Guide (Exps 1 to 8 + Top 35 Q&A)
+    ├── VIVA_AND_EXPERIMENT_EXPLANATION_GUIDE.md <-- Quick viva revision guide
+    └── PROJECT_FILES_AND_VISUALS_GUIDE.md    <-- This master file index
 ```
 
 ---
 
-## 🖼️ 2. Detailed Explanation of Experiment 5 Images & Charts
+## 🔬 2. Visual Figures & Charts Catalog
 
-### 📊 Image 1: `experiment5_cv_comparison.png`
-* **Kya h (What it is):** Grouped bar chart with error bars comparing 5-Fold Cross-Validation Accuracy, Malignant Recall, Precision, F1-Score, and ROC-AUC for Logistic Regression, SVM, and Random Forest.
-* **Interpretation for Sir:** "Sir, is chart me 5-Fold Cross-Validation ka benchmark hai. SVM (RBF) ne highest overall score achieve kiya ($0.9960\text{ ROC-AUC}, 97.58\%\text{ Accuracy}, 98.89\%\text{ Precision}$). Logistic Regression ne $95.29\%$ CV recall achieve kiya. Sabhi models $95\%$ target benchmark line se upar perform kar rahe hain."
-
----
-
-### 📊 Image 2: `experiment5_confusion_matrices.png`
-* **Kya h (What it is):** Side-by-side Confusion Matrices on the independent validation holdout set ($N=57$: 36 Benign, 21 Malignant) displaying exact counts and percentages.
-* **Interpretation for Sir:** "Sir, clinical oncology me False Negatives (FN) sabse dangerous hote hain kyunki cancer patient ko healthy ghoshit kar diya jata hai. Random Forest ne sabse kam False Negatives diye ($\text{FN}=1$, Recall $= 95.24\%$). SVM aur Logistic Regression ne zero False Positives diye ($\text{FP}=0$, Specificity $= 100\%$), jisse unnecessary biopsies avoid hoti hain."
-
----
-
-### 📊 Image 3: `experiment5_roc_curves.png`
-* **Kya h (What it is):** Receiver Operating Characteristic (ROC) curves plotting True Positive Rate (Sensitivity) vs False Positive Rate (1 - Specificity) across all discrimination thresholds.
-* **Interpretation for Sir:** "Sir, teeno models ki ROC curves top-left corner me hug kar rahi hain with AUC $> 0.9934$. Baseline diagonal line (No-Skill AUC = 0.500) se massive improvement show karti hai, proving high threshold discriminability."
-
----
-
-### 📊 Image 4: `experiment5_precision_recall_curves.png`
-* **Kya h (What it is):** Precision-Recall curves showing trade-offs between precision and recall against the dataset prevalence baseline ($36.8\%$).
-* **Interpretation for Sir:** "Sir, imbalanced datasets me PR curve accuracy se behtar evaluation deti hai. Random Forest ne highest PR-AUC ($0.9918$) achieve kiya, jo prove karta hai ki high recall maintain karte hue bhi precision drop nahi hota."
+| Figure Filename | Experiment | Clinical & Technical Purpose |
+|---|:---:|---|
+| `experiment2_class_distribution.png` | Exp 2 | Shows raw dataset class imbalance (357 Benign vs 212 Malignant). |
+| `experiment3_class_distribution.png` | Exp 3 | Verifies identical 62.7% : 37.3% ratio across Train, Val, and Test splits. |
+| `experiment3_scaling_comparison.png` | Exp 3 | Visualizes raw vs standardized feature distributions ($\mu=0, \sigma=1$). |
+| `experiment4_correlation_heatmap.png`| Exp 4 | Full 30-feature Pearson heatmap demonstrating $|r|>0.90$ multicollinearity. |
+| `experiment4_boxplots_by_diagnosis.png`| Exp 4 | Shows distinct separation between Benign and Malignant nuclear contours. |
+| `experiment4_target_correlations.png`| Exp 4 | Bar chart ranking the top predictive biomarkers (`concave_points_worst`). |
+| `experiment5_cv_comparison.png`      | Exp 5 | 5-Fold Stratified CV benchmark (SVM peak: 0.9960 ROC-AUC). |
+| `experiment5_learning_curves.png`    | Exp 5 | Learning curves proving high generalization without overfitting. |
+| `experiment5_hyperparameter_heatmaps.png`| Exp 5| SVM $C$ vs $\gamma$ surface tuning surface. |
+| `experiment6_test_roc_curves.png`    | Exp 6 | Held-out test set ROC curves (SVM & Ensemble: AUC = 1.0000). |
+| `experiment6_test_pr_curves.png`     | Exp 6 | Precision-Recall curves illustrating positive predictive power. |
+| `experiment6_confusion_matrices.png` | Exp 6 | 2x2 confusion matrix grid proving zero False Negatives on SVM. |
+| `experiment6_threshold_tuning.png`   | Exp 6 | Decision threshold sweep showing $\tau^*=0.35$ eliminates tree false negatives. |
+| `experiment6_error_analysis.png`     | Exp 6 | Cytomorphological Z-score profiles of borderline test specimens. |
+| `experiment6_model_comparison.png`   | Exp 6 | Multi-metric comparison bar chart establishing SVM as champion. |
+| `experiment7_deployment_benchmarks.png`| Exp 7| FastAPI latency distribution (P95: 9.75 ms) and LIS queue allocation. |
+| `experiment8_drift_analysis.png`     | Exp 8 | KS-test $p$-values, PSI scores, and rolling recall longitudinal recovery. |
 
 ---
 
-### 📊 Image 5: `experiment5_feature_importance.png`
-* **Kya h (What it is):** Random Forest Mean Decrease in Impurity (Gini) Top-12 features alongside Logistic Regression standardized weight coefficients.
-* **Interpretation for Sir:** "Sir, is plot se model interpretability prove hoti hai. `concave_points_worst`, `perimeter_worst`, aur `radius_worst` dono models me top predictive drivers hain, jo Experiment 4 ke EDA findings ($r > 0.78$) ke sath $100\%$ align karte hain."
+## 🏆 3. Quick Verification Checklist for Project Submission
 
----
-
-### 📊 Image 6: `experiment5_learning_curves.png`
-* **Kya h (What it is):** Learning curves plotting Training ROC-AUC vs 5-Fold CV ROC-AUC over increasing training sample sizes (from 45 to 455 samples).
-* **Interpretation for Sir:** "Sir, learning curves se confirm hota hai ki model overfit ya underfit nahi ho raha. Training aur validation curves tightly converge ho rahi hain ($>0.99$), showing high sample efficiency and generalization."
-
----
-
-### 📊 Image 7: `experiment5_hyperparameter_heatmaps.png`
-* **Kya h (What it is):** 2D Heatmap showing SVM cross-validation ROC-AUC score surface across different combinations of regularization parameter $C$ and kernel coefficient $\gamma$.
-* **Interpretation for Sir:** "Sir, heatmap se dikhta hai ki $C=5.0$ aur $\gamma=0.01$ par SVM peak performance ($0.9960$) deta hai. Agar gamma zyada high ho jaye ($>0.1$), to model overfit karne lagta hai."
+- [x] **Experiment 1:** Completed (Report + PDF).
+- [x] **Experiment 2:** Completed (Script + Report + PDF + Visuals).
+- [x] **Experiment 3:** Completed (Script + Processed CSVs + Scaler .pkl + Report + PDF).
+- [x] **Experiment 4:** Completed (Script + 12 Visuals + Report + PDF).
+- [x] **Experiment 5:** Completed (Script + Trained .pkl Checkpoints + Report + PDF).
+- [x] **Experiment 6:** Completed (`experiment_6_model_evaluation.py` + Champion `champion_model.pkl` + Report + PDF + Visuals).
+- [x] **Experiment 7:** Completed (`deployment/app.py` + `deployment/test_api.py` + `experiment_7_deployment.py` + Audit Logs + Report + PDF + Visuals).
+- [x] **Experiment 8:** Completed (`experiment_8_monitoring_drift.py` + Retraining Triggers + Rollback Plan + Report + PDF + Visuals).
+- [x] **Master Viva Guide:** Completed (`summary/FULL_VIVA_COMPLETE_MASTER_GUIDE.md` with 35+ Q&A and 2-min pitch).

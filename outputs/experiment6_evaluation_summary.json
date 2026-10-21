@@ -1,0 +1,121 @@
+{
+    "experiment": "Experiment 6: Model Evaluation",
+    "dataset_split": "Held-Out Test Set (N=57)",
+    "models_evaluated": [
+        "Logistic Regression",
+        "Support Vector Machine",
+        "Random Forest",
+        "Ensemble (Soft Voting)"
+    ],
+    "champion_model": "Support Vector Machine",
+    "metrics_summary": [
+        {
+            "Model": "Logistic Regression",
+            "Accuracy": 0.9824561403508771,
+            "Balanced_Accuracy": 0.9861111111111112,
+            "Recall (Sensitivity)": 1.0,
+            "Specificity": 0.9722222222222222,
+            "Precision": 0.9545454545454546,
+            "F1-Score": 0.9767441860465116,
+            "ROC-AUC": 1.0,
+            "PR-AUC": 1.0,
+            "Brier_Score": 0.008390975464886869,
+            "TP": 21,
+            "TN": 35,
+            "FP": 1,
+            "FN": 0
+        },
+        {
+            "Model": "Support Vector Machine",
+            "Accuracy": 1.0,
+            "Balanced_Accuracy": 1.0,
+            "Recall (Sensitivity)": 1.0,
+            "Specificity": 1.0,
+            "Precision": 1.0,
+            "F1-Score": 1.0,
+            "ROC-AUC": 1.0,
+            "PR-AUC": 1.0,
+            "Brier_Score": 0.005615636068023555,
+            "TP": 21,
+            "TN": 36,
+            "FP": 0,
+            "FN": 0
+        },
+        {
+            "Model": "Random Forest",
+            "Accuracy": 0.9649122807017544,
+            "Balanced_Accuracy": 0.9523809523809523,
+            "Recall (Sensitivity)": 0.9047619047619048,
+            "Specificity": 1.0,
+            "Precision": 1.0,
+            "F1-Score": 0.95,
+            "ROC-AUC": 0.9986772486772486,
+            "PR-AUC": 0.9978354978354977,
+            "Brier_Score": 0.021418617314892165,
+            "TP": 19,
+            "TN": 36,
+            "FP": 0,
+            "FN": 2
+        },
+        {
+            "Model": "Ensemble (Soft Voting)",
+            "Accuracy": 1.0,
+            "Balanced_Accuracy": 1.0,
+            "Recall (Sensitivity)": 1.0,
+            "Specificity": 1.0,
+            "Precision": 1.0,
+            "F1-Score": 1.0,
+            "ROC-AUC": 1.0,
+            "PR-AUC": 1.0,
+            "Brier_Score": 0.009356684157337026,
+            "TP": 21,
+            "TN": 36,
+            "FP": 0,
+            "FN": 0
+        }
+    ],
+    "error_analysis_cases": [
+        {
+            "test_sample_idx": 2,
+            "actual_diagnosis": "Malignant",
+            "lr_pred": "Malignant",
+            "lr_proba": 0.8523,
+            "svm_pred": "Malignant",
+            "svm_proba": 0.7703,
+            "rf_pred": "Benign",
+            "rf_proba": 0.379,
+            "concave_points_worst_zscore": 0.306,
+            "radius_worst_zscore": -0.115,
+            "perimeter_worst_zscore": -0.166,
+            "area_worst_zscore": -0.228
+        },
+        {
+            "test_sample_idx": 12,
+            "actual_diagnosis": "Benign",
+            "lr_pred": "Malignant",
+            "lr_proba": 0.5092,
+            "svm_pred": "Benign",
+            "svm_proba": 0.2913,
+            "rf_pred": "Benign",
+            "rf_proba": 0.0952,
+            "concave_points_worst_zscore": -0.567,
+            "radius_worst_zscore": -0.266,
+            "perimeter_worst_zscore": -0.327,
+            "area_worst_zscore": -0.318
+        },
+        {
+            "test_sample_idx": 41,
+            "actual_diagnosis": "Malignant",
+            "lr_pred": "Malignant",
+            "lr_proba": 0.7576,
+            "svm_pred": "Malignant",
+            "svm_proba": 0.7074,
+            "rf_pred": "Benign",
+            "rf_proba": 0.4423,
+            "concave_points_worst_zscore": 0.105,
+            "radius_worst_zscore": -0.029,
+            "perimeter_worst_zscore": 0.016,
+            "area_worst_zscore": -0.14
+        }
+    ]
+}

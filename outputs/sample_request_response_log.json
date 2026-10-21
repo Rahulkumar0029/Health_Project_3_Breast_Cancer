@@ -1,0 +1,422 @@
+[
+    {
+        "test_name": "Root Endpoint",
+        "method": "GET",
+        "endpoint": "/",
+        "response_status": 200,
+        "response_body": {
+            "service": "Breast Cancer Detection Lab Scoring Service",
+            "status": "HEALTHY",
+            "version": "1.0.0",
+            "champion_model": "Support Vector Machine (RBF Kernel)",
+            "intended_use": "Pathologist assistive triage & second-opinion flag",
+            "uptime_seconds": 0.56,
+            "docs_url": "/docs",
+            "endpoints": [
+                "/health",
+                "/model-info",
+                "/predict",
+                "/batch-predict",
+                "/lis/webhook"
+            ]
+        }
+    },
+    {
+        "test_name": "Health Diagnostics",
+        "method": "GET",
+        "endpoint": "/health",
+        "response_status": 200,
+        "response_body": {
+            "status": "UP",
+            "model_loaded": true,
+            "scaler_loaded": true,
+            "memory_status": "NORMAL",
+            "timestamp": "2026-10-21T04:29:10.025187Z"
+        }
+    },
+    {
+        "test_name": "Model Info",
+        "method": "GET",
+        "endpoint": "/model-info",
+        "response_status": 200,
+        "response_body": {
+            "model_name": "Breast Cancer FNA Triage Champion Classifier",
+            "model_type": "Support Vector Machine",
+            "version": "1.0.0",
+            "serialization_date": "2026-10-21",
+            "training_samples": 455,
+            "validation_samples": 57,
+            "test_samples": 57,
+            "features": [
+                "radius_mean",
+                "texture_mean",
+                "perimeter_mean",
+                "area_mean",
+                "smoothness_mean",
+                "compactness_mean",
+                "concavity_mean",
+                "concave_points_mean",
+                "symmetry_mean",
+                "fractal_dimension_mean",
+                "radius_se",
+                "texture_se",
+                "perimeter_se",
+                "area_se",
+                "smoothness_se",
+                "compactness_se",
+                "concavity_se",
+                "concave_points_se",
+                "symmetry_se",
+                "fractal_dimension_se",
+                "radius_worst",
+                "texture_worst",
+                "perimeter_worst",
+                "area_worst",
+                "smoothness_worst",
+                "compactness_worst",
+                "concavity_worst",
+                "concave_points_worst",
+                "symmetry_worst",
+                "fractal_dimension_worst"
+            ],
+            "hyperparameters": {
+                "C": 5.0,
+                "break_ties": false,
+                "cache_size": 200,
+                "class_weight": null,
+                "coef0": 0.0,
+                "decision_function_shape": "ovr",
+                "degree": 3,
+                "gamma": 0.01,
+                "kernel": "rbf",
+                "max_iter": -1,
+                "probability": true,
+                "random_state": 42,
+                "shrinking": true,
+                "tol": 0.001,
+                "verbose": false
+            },
+            "performance_metrics": {
+                "test_accuracy": 1.0,
+                "test_recall": 1.0,
+                "test_specificity": 1.0,
+                "test_precision": 1.0,
+                "test_f1": 1.0,
+                "test_roc_auc": 1.0,
+                "test_pr_auc": 1.0,
+                "brier_score": 0.005615636068023555,
+                "confusion_matrix": {
+                    "TP": 21,
+                    "TN": 36,
+                    "FP": 0,
+                    "FN": 0
+                }
+            },
+            "operating_thresholds": {
+                "default": 0.5,
+                "clinical_high_sensitivity": 0.35,
+                "clinical_high_specificity": 0.65
+            },
+            "governance": {
+                "intended_use": "Pathologist assistive second-opinion priority triage flag",
+                "regulatory_status": "Investigational Clinical Decision Support Tool (Non-Autonomous)",
+                "primary_clinician": "Senior Cytopathologist"
+            }
+        }
+    },
+    {
+        "test_name": "Single Prediction - Benign",
+        "method": "POST",
+        "endpoint": "/predict",
+        "request_payload": {
+            "sample_id": "PT-BENIGN-001",
+            "is_standardized": false,
+            "features": {
+                "radius_mean": 13.54,
+                "texture_mean": 14.36,
+                "perimeter_mean": 87.46,
+                "area_mean": 566.3,
+                "smoothness_mean": 0.09779,
+                "compactness_mean": 0.08129,
+                "concavity_mean": 0.06664,
+                "concave_points_mean": 0.04781,
+                "symmetry_mean": 0.1885,
+                "fractal_dimension_mean": 0.05766,
+                "radius_se": 0.2699,
+                "texture_se": 0.7886,
+                "perimeter_se": 2.058,
+                "area_se": 23.56,
+                "smoothness_se": 0.008462,
+                "compactness_se": 0.0146,
+                "concavity_se": 0.02387,
+                "concave_points_se": 0.01315,
+                "symmetry_se": 0.0198,
+                "fractal_dimension_se": 0.0023,
+                "radius_worst": 15.11,
+                "texture_worst": 19.26,
+                "perimeter_worst": 99.7,
+                "area_worst": 711.2,
+                "smoothness_worst": 0.144,
+                "compactness_worst": 0.1773,
+                "concavity_worst": 0.239,
+                "concave_points_worst": 0.1288,
+                "symmetry_worst": 0.2977,
+                "fractal_dimension_worst": 0.07259
+            }
+        },
+        "response_status": 200,
+        "response_body": {
+            "sample_id": "PT-BENIGN-001",
+            "predicted_class": 0,
+            "diagnosis_label": "Benign",
+            "malignancy_probability": 0.0254,
+            "confidence_category": "Low Risk (Benign)",
+            "clinical_triage_flag": "NORMAL_QUEUE",
+            "top_contributing_biomarkers": [
+                {
+                    "biomarker": "texture_mean",
+                    "standardized_zscore": -1.18,
+                    "raw_value": 14.36
+                },
+                {
+                    "biomarker": "texture_worst",
+                    "standardized_zscore": -1.094,
+                    "raw_value": 19.26
+                },
+                {
+                    "biomarker": "texture_se",
+                    "standardized_zscore": -0.778,
+                    "raw_value": 0.7886
+                }
+            ],
+            "inference_latency_ms": 33.734,
+            "model_version": "1.0.0",
+            "timestamp": "2026-10-21T04:29:10.087726Z"
+        }
+    },
+    {
+        "test_name": "Single Prediction - Malignant",
+        "method": "POST",
+        "endpoint": "/predict",
+        "request_payload": {
+            "sample_id": "PT-MALIGNANT-002",
+            "is_standardized": false,
+            "features": {
+                "radius_mean": 17.99,
+                "texture_mean": 10.38,
+                "perimeter_mean": 122.8,
+                "area_mean": 1001.0,
+                "smoothness_mean": 0.1184,
+                "compactness_mean": 0.2776,
+                "concavity_mean": 0.3001,
+                "concave_points_mean": 0.1471,
+                "symmetry_mean": 0.2419,
+                "fractal_dimension_mean": 0.07871,
+                "radius_se": 1.095,
+                "texture_se": 0.9053,
+                "perimeter_se": 8.589,
+                "area_se": 153.4,
+                "smoothness_se": 0.006399,
+                "compactness_se": 0.04904,
+                "concavity_se": 0.05373,
+                "concave_points_se": 0.01587,
+                "symmetry_se": 0.03003,
+                "fractal_dimension_se": 0.006193,
+                "radius_worst": 25.38,
+                "texture_worst": 17.33,
+                "perimeter_worst": 184.6,
+                "area_worst": 2019.0,
+                "smoothness_worst": 0.1622,
+                "compactness_worst": 0.6656,
+                "concavity_worst": 0.7119,
+                "concave_points_worst": 0.2654,
+                "symmetry_worst": 0.4601,
+                "fractal_dimension_worst": 0.1189
+            }
+        },
+        "response_status": 200,
+        "response_body": {
+            "sample_id": "PT-MALIGNANT-002",
+            "predicted_class": 1,
+            "diagnosis_label": "Malignant",
+            "malignancy_probability": 1.0,
+            "confidence_category": "High Risk Malignancy",
+            "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW",
+            "top_contributing_biomarkers": [
+                {
+                    "biomarker": "compactness_mean",
+                    "standardized_zscore": 3.227,
+                    "raw_value": 0.2776
+                },
+                {
+                    "biomarker": "symmetry_worst",
+                    "standardized_zscore": 2.679,
+                    "raw_value": 0.4601
+                },
+                {
+                    "biomarker": "perimeter_se",
+                    "standardized_zscore": 2.677,
+                    "raw_value": 8.589
+                }
+            ],
+            "inference_latency_ms": 0.732,
+            "model_version": "1.0.0",
+            "timestamp": "2026-10-21T04:29:10.093489Z"
+        }
+    },
+    {
+        "test_name": "Batch Prediction",
+        "method": "POST",
+        "endpoint": "/batch-predict",
+        "request_payload": {
+            "batch_id": "LAB-RUN-2026-OCT-21",
+            "sample_count": 10
+        },
+        "response_status": 200,
+        "response_body": {
+            "batch_id": "LAB-RUN-2026-OCT-21",
+            "total_samples": 10,
+            "malignant_count": 10,
+            "benign_count": 0,
+            "priority_flag_count": 10,
+            "predictions": [
+                {
+                    "sample_id": "BATCH-SPECIMEN-001",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 1.0,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-002",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 1.0,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-003",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 1.0,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-004",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 0.9687,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-005",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 1.0,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-006",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 0.8829,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-007",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 1.0,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-008",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 0.8986,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-009",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 0.9955,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                },
+                {
+                    "sample_id": "BATCH-SPECIMEN-010",
+                    "predicted_class": 1,
+                    "diagnosis_label": "Malignant",
+                    "malignancy_probability": 0.9654,
+                    "confidence_category": "High Risk Malignancy",
+                    "clinical_triage_flag": "PRIORITY_PATHOLOGIST_REVIEW"
+                }
+            ],
+            "total_processing_time_ms": 0.72,
+            "timestamp": "2026-10-21T04:29:10.100722Z"
+        }
+    },
+    {
+        "test_name": "LIS Webhook Integration",
+        "method": "POST",
+        "endpoint": "/lis/webhook",
+        "request_payload": {
+            "order_id": "LIS-ORD-2026-89412",
+            "patient_id": "MRN-BREAST-99104",
+            "ordering_physician": "Dr. Sarah Jenkins, MD (Surgical Oncology)",
+            "collection_site": "Right Breast Upper Outer Quadrant - Core Needle Biopsy",
+            "raw_measurements": {
+                "radius_mean": 17.99,
+                "texture_mean": 10.38,
+                "perimeter_mean": 122.8,
+                "area_mean": 1001.0,
+                "smoothness_mean": 0.1184,
+                "compactness_mean": 0.2776,
+                "concavity_mean": 0.3001,
+                "concave_points_mean": 0.1471,
+                "symmetry_mean": 0.2419,
+                "fractal_dimension_mean": 0.07871,
+                "radius_se": 1.095,
+                "texture_se": 0.9053,
+                "perimeter_se": 8.589,
+                "area_se": 153.4,
+                "smoothness_se": 0.006399,
+                "compactness_se": 0.04904,
+                "concavity_se": 0.05373,
+                "concave_points_se": 0.01587,
+                "symmetry_se": 0.03003,
+                "fractal_dimension_se": 0.006193,
+                "radius_worst": 25.38,
+                "texture_worst": 17.33,
+                "perimeter_worst": 184.6,
+                "area_worst": 2019.0,
+                "smoothness_worst": 0.1622,
+                "compactness_worst": 0.6656,
+                "concavity_worst": 0.7119,
+                "concave_points_worst": 0.2654,
+                "symmetry_worst": 0.4601,
+                "fractal_dimension_worst": 0.1189
+            }
+        },
+        "response_status": 200,
+        "response_body": {
+            "order_id": "LIS-ORD-2026-89412",
+            "patient_id": "MRN-BREAST-99104",
+            "status": "PROCESSED_BY_AI_TRIAGE",
+            "triage_alert": "CRITICAL_FLAG_SUSPECTED_MALIGNANCY",
+            "assigned_worklist": "URGENT_PRIORITY_CYTOPATHOLOGY_WORKLIST",
+            "predicted_malignancy_prob": 1.0,
+            "recommendation": "Prioritize for immediate senior cytopathologist microscopic review within 4 hours.",
+            "signature_audit": "AI-TRIAGE-SHA256:298a847b"
+        }
+    }
+]

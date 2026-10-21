@@ -1,0 +1,13 @@
+EXPERIMENT 6: MODEL EVALUATION & ERROR ANALYSIS REPORT
+================================================================================
+
+                 Model  Accuracy  Balanced_Accuracy  Recall (Sensitivity)  Specificity  Precision  F1-Score  ROC-AUC   PR-AUC  Brier_Score  TP  TN  FP  FN
+   Logistic Regression  0.982456           0.986111              1.000000     0.972222   0.954545  0.976744 1.000000 1.000000     0.008391  21  35   1   0
+Support Vector Machine  1.000000           1.000000              1.000000     1.000000   1.000000  1.000000 1.000000 1.000000     0.005616  21  36   0   0
+         Random Forest  0.964912           0.952381              0.904762     1.000000   1.000000  0.950000 0.998677 0.997835     0.021419  19  36   0   2
+Ensemble (Soft Voting)  1.000000           1.000000              1.000000     1.000000   1.000000  1.000000 1.000000 1.000000     0.009357  21  36   0   0
+
+CHAMPION MODEL SELECTION JUSTIFICATION:
+Champion: Support Vector Machine
+Key Rationale: Highest Malignant Recall (Clinical Sensitivity), superior ROC-AUC,
+low Brier calibration score, and robust resistance to feature multicollinearity.

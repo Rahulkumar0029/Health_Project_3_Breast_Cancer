@@ -128,7 +128,8 @@ def run_experiment_4():
     ax.grid(axis='y', linestyle='--', alpha=0.6)
     plt.tight_layout()
     chart1_path = os.path.join(OUTPUTS_DIR, "experiment4_class_distribution.png")
-    plt.savefig(chart1_path, dpi=300)
+    plt.savefig(chart1_path, dpi=200)
+    plt.close('all')
     plt.close()
     print(f"    [+] Saved figure: {chart1_path}")
 
@@ -165,7 +166,7 @@ def run_experiment_4():
     plt.suptitle('Exploratory Histograms: Nuclear Mean Feature Distributions by Diagnosis', fontsize=14, fontweight='bold', y=1.002)
     plt.tight_layout()
     chart2_path = os.path.join(OUTPUTS_DIR, "experiment4_feature_distributions.png")
-    plt.savefig(chart2_path, dpi=300, bbox_inches='tight')
+    plt.savefig(chart2_path, dpi=200, bbox_inches='tight')
     plt.close()
     print(f"    [+] Saved figure: {chart2_path}")
 
@@ -214,7 +215,7 @@ def run_experiment_4():
     plt.suptitle('Comparative Nuclear Morphology: Benign vs Malignant Boxplots', fontsize=14, fontweight='bold', y=1.01)
     plt.tight_layout()
     chart3_path = os.path.join(OUTPUTS_DIR, "experiment4_boxplots_by_diagnosis.png")
-    plt.savefig(chart3_path, dpi=300, bbox_inches='tight')
+    plt.savefig(chart3_path, dpi=200, bbox_inches='tight')
     plt.close()
     print(f"    [+] Saved figure: {chart3_path}")
 
@@ -238,7 +239,7 @@ def run_experiment_4():
     ax.set_title('Correlation Heatmap: 30 Continuous Nuclear Morphological Features', fontsize=13, fontweight='bold', pad=12)
     plt.tight_layout()
     chart4_path = os.path.join(OUTPUTS_DIR, "experiment4_correlation_heatmap.png")
-    plt.savefig(chart4_path, dpi=300)
+    plt.savefig(chart4_path, dpi=200)
     plt.close()
     print(f"    [+] Saved figure: {chart4_path}")
 
@@ -261,7 +262,7 @@ def run_experiment_4():
     plt.yticks(rotation=0)
     plt.tight_layout()
     chart4b_path = os.path.join(OUTPUTS_DIR, "experiment4_mean_correlation_matrix.png")
-    plt.savefig(chart4b_path, dpi=300)
+    plt.savefig(chart4b_path, dpi=200)
     plt.close()
     print(f"    [+] Saved figure: {chart4b_path}")
 
@@ -298,7 +299,7 @@ def run_experiment_4():
     plt.xticks(rotation=15, fontweight='bold')
     plt.tight_layout()
     chart5_path = os.path.join(OUTPUTS_DIR, "experiment4_outlier_detection.png")
-    plt.savefig(chart5_path, dpi=300)
+    plt.savefig(chart5_path, dpi=200)
     plt.close()
     print(f"    [+] Saved figure: {chart5_path}")
 
@@ -336,7 +337,7 @@ def run_experiment_4():
     ax.grid(axis='y', linestyle='--', alpha=0.6)
     plt.tight_layout()
     chart6_path = os.path.join(OUTPUTS_DIR, "experiment4_classwise_means.png")
-    plt.savefig(chart6_path, dpi=300)
+    plt.savefig(chart6_path, dpi=200)
     plt.close()
     print(f"    [+] Saved figure: {chart6_path}")
 
@@ -358,7 +359,7 @@ def run_experiment_4():
     ax.grid(True, linestyle=':', alpha=0.6)
     plt.tight_layout()
     chart7_path = os.path.join(OUTPUTS_DIR, "experiment4_radius_vs_area_scatter.png")
-    plt.savefig(chart7_path, dpi=300)
+    plt.savefig(chart7_path, dpi=200)
     plt.close()
     print(f"    [+] Saved figure: {chart7_path}")
 
@@ -383,7 +384,7 @@ def run_experiment_4():
     ax.grid(axis='x', linestyle=':', alpha=0.6)
     plt.tight_layout()
     chart8_path = os.path.join(OUTPUTS_DIR, "experiment4_target_correlations.png")
-    plt.savefig(chart8_path, dpi=300)
+    plt.savefig(chart8_path, dpi=200)
     plt.close()
     print(f"    [+] Saved figure: {chart8_path}")
 

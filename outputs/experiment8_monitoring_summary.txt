@@ -1,0 +1,20 @@
+EXPERIMENT 8: CONTINUOUS MONITORING, DATA DRIFT & MAINTENANCE REPORT
+=====================================================================================
+
+1. STATISTICAL DRIFT AUDIT RESULTS:
+             Feature  Batch1_KS_Stat  Batch1_p_val  Batch1_PSI Batch1_Status  Batch2_KS_Stat  Batch2_p_val  Batch2_PSI Batch2_Status
+concave_points_worst          0.0817        0.8576      0.1311         DRIFT          0.2487        0.0031      0.3199   DRIFT ALERT
+        radius_worst          0.0731        0.9294      0.0732        STABLE          0.3082        0.0001      1.6560   DRIFT ALERT
+     perimeter_worst          0.0928        0.7372      0.1060         DRIFT          0.3279        0.0000      1.5212   DRIFT ALERT
+          area_worst          0.0689        0.9545      0.0877        STABLE          0.4025        0.0000      2.7757   DRIFT ALERT
+       texture_worst          0.0600        0.9873      0.0973        STABLE          0.2295        0.0078      0.4608   DRIFT ALERT
+      concavity_mean          0.0912        0.7556      1.1658         DRIFT          0.0908        0.7605      0.1924   DRIFT ALERT
+
+2. RETRAINING TRIGGERS DEFINED:
+- Data Drift Trigger: PSI >= 0.25 on any top diagnostic biomarker.
+- Concept Drift Trigger: Rolling Malignant Recall drops below 95.0% over 50 confirmed cases.
+- Calendar Cadence: Scheduled quarterly re-benchmarking against new biopsy cohorts.
+
+3. ROLLBACK PLAN:
+- Automatic Blue/Green routing fallback to champion_model.pkl snapshot if challenger regresses.
+- 24/7 clinical on-call notification for manual pathologist intervention.

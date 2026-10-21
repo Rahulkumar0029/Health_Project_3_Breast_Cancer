@@ -132,24 +132,42 @@ Health_Project_3_Breast_Cancer/
 │   ├── experiment5_roc_curves.png
 │   ├── experiment5_precision_recall_curves.png
 │   ├── experiment5_feature_importance.png
-│   └── experiment5_learning_curves.png
+│   ├── experiment5_learning_curves.png
+│   ├── experiment6_test_roc_curves.png
+│   ├── experiment6_test_pr_curves.png
+│   ├── experiment6_confusion_matrices.png
+│   ├── experiment6_threshold_tuning.png
+│   ├── experiment6_error_analysis.png
+│   ├── experiment6_model_comparison.png
+│   ├── experiment7_deployment_benchmarks.png
+│   └── experiment8_drift_analysis.png
 │
-├── report/                               # Markdown Reports & Word Documents (.docx)
+├── deployment/                           # Production FastAPI Scoring Microservice
+│   ├── app.py                            # FastAPI application with LIS Webhook
+│   └── test_api.py                       # Automated verification & stress testing
+│
+├── report/                               # Academic Markdown Reports for All Experiments
 │   ├── Experiment_1_Objective_Definition.md
 │   ├── Experiment_2_Dataset_Details.md
 │   ├── Experiment_3_Data_Preprocessing.md
 │   ├── Experiment_4_Data_Exploration_EDA.md
 │   ├── Experiment_5_Model_Training.md
-│   └── Experiment_5_Model_Training.docx
+│   ├── Experiment_6_Model_Evaluation.md
+│   ├── Experiment_7_Deployment.md
+│   └── Experiment_8_Continuous_Update_Maintenance.md
 │
-├── experiment_pdfs/                      # Ready-to-Submit Academic Lab PDFs
+├── experiment_pdfs/                      # Ready-to-Submit Academic Lab PDFs (1 to 8)
 │   ├── Experiment_1_Objective_Definition.pdf
 │   ├── Experiment_2_Dataset_Details.pdf
 │   ├── Experiment_3_Data_Preprocessing.pdf
 │   ├── Experiment_4_Data_Exploration_EDA.pdf
-│   └── Experiment_5_Model_Training.pdf
+│   ├── Experiment_5_Model_Training.pdf
+│   ├── Experiment_6_Model_Evaluation.pdf
+│   ├── Experiment_7_Deployment.pdf
+│   └── Experiment_8_Continuous_Update_Maintenance.pdf
 │
-├── summary/                              # Viva Preparation & Visual Guides
+├── summary/                              # Master Viva Preparation & System Guides
+│   ├── FULL_VIVA_COMPLETE_MASTER_GUIDE.md # 🏆 Master Viva Complete File (All 8 Exps + 35+ Q&A)
 │   ├── VIVA_AND_EXPERIMENT_EXPLANATION_GUIDE.md
 │   └── PROJECT_FILES_AND_VISUALS_GUIDE.md
 │
@@ -182,22 +200,38 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Execute Pipelines
+### 4. Execute End-to-End Experiment Pipelines
 ```bash
-# Run Preprocessing (Exp 3)
+# Experiment 2: Dataset Audit
+python notebooks/experiment_2_dataset_audit.py
+
+# Experiment 3: Preprocessing & Zero-Leakage Scaling
 python notebooks/experiment_3_data_preprocessing.py
 
-# Run Exploratory Data Analysis (Exp 4)
+# Experiment 4: Exploratory Data Analysis (EDA)
 python notebooks/experiment_4_data_exploration.py
 
-# Run Model Training & Tuning (Exp 5)
+# Experiment 5: Model Training, CV & Hyperparameter Tuning
 python notebooks/experiment_5_model_training.py
 
-# Generate Submission PDFs
-python notebooks/generate_experiment_pdf.py
+# Experiment 6: Held-Out Model Evaluation & Error Analysis
+python notebooks/experiment_6_model_evaluation.py
 
-# Generate Word Document (.docx)
-python notebooks/generate_word_doc.py
+# Experiment 7: FastAPI Deployment Verification & Latency Benchmark
+python notebooks/experiment_7_deployment.py
+
+# Experiment 8: Data Drift Surveillance & Maintenance Pipeline
+python notebooks/experiment_8_monitoring_drift.py
+
+# Compile All 8 Lab PDFs in experiment_pdfs/
+python notebooks/generate_experiment_pdf.py
+```
+
+### 5. Launch Live Production FastAPI Scoring Service
+```bash
+python -m uvicorn deployment.app:app --host 127.0.0.1 --port 8000 --reload
+# Access Interactive Swagger UI Documentation: http://127.0.0.1:8000/docs
+# Access Interactive ReDoc Documentation:      http://127.0.0.1:8000/redoc
 ```
 
 ---
