@@ -7,7 +7,7 @@ CSE4001 EXPERIMENT 5: MODEL TRAINING & HYPERPARAMETER TUNING SUMMARY
   - 5-Fold CV Precision: 0.9771 (+/- 0.0280)
   - 5-Fold CV F1-Score:  0.9640 (+/- 0.0207)
   - 5-Fold CV Accuracy:  0.9736 (+/- 0.0149)
-  - Tuning Duration:     4.87 seconds
+  - Tuning Duration:     4.69 seconds
 
 [Support Vector Machine] Best Parameters: {'C': 5.0, 'class_weight': None, 'gamma': 0.01, 'kernel': 'rbf'}
   - 5-Fold CV ROC-AUC:   0.9960 (+/- 0.0050)
@@ -15,7 +15,7 @@ CSE4001 EXPERIMENT 5: MODEL TRAINING & HYPERPARAMETER TUNING SUMMARY
   - 5-Fold CV Precision: 0.9889 (+/- 0.0222)
   - 5-Fold CV F1-Score:  0.9666 (+/- 0.0185)
   - 5-Fold CV Accuracy:  0.9758 (+/- 0.0128)
-  - Tuning Duration:     29.49 seconds
+  - Tuning Duration:     23.33 seconds
 
 [Random Forest] Best Parameters: {'class_weight': 'balanced', 'max_depth': 12, 'max_features': 'log2', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 50}
   - 5-Fold CV ROC-AUC:   0.9913 (+/- 0.0048)
@@ -23,7 +23,7 @@ CSE4001 EXPERIMENT 5: MODEL TRAINING & HYPERPARAMETER TUNING SUMMARY
   - 5-Fold CV Precision: 0.9469 (+/- 0.0219)
   - 5-Fold CV F1-Score:  0.9439 (+/- 0.0218)
   - 5-Fold CV Accuracy:  0.9582 (+/- 0.0162)
-  - Tuning Duration:     625.13 seconds
+  - Tuning Duration:     5115.55 seconds
 
 ================================================================================
 VALIDATION SET (N=57) METRICS COMPARISON TABLE

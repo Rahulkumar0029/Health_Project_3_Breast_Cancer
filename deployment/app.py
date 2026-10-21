@@ -25,7 +25,8 @@ import joblib
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -35,7 +36,9 @@ from pydantic import BaseModel, Field
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 OUTPUTS_DIR = os.path.join(BASE_DIR, "outputs")
+STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 os.makedirs(OUTPUTS_DIR, exist_ok=True)
+os.makedirs(STATIC_DIR, exist_ok=True)
 
 LOG_FILE = os.path.join(OUTPUTS_DIR, "deployment_request_response.log")
 logging.basicConfig(
@@ -116,6 +119,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount outputs and static directories
+if os.path.exists(OUTPUTS_DIR):
+    app.mount("/outputs", StaticFiles(directory=OUTPUTS_DIR), name="outputs")
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # ---------------------------------------------------------------------------
 # Pydantic Schemas
@@ -228,7 +237,16 @@ def compute_triage_tier(prob: float) -> tuple[str, str]:
 # ---------------------------------------------------------------------------
 # API Endpoints
 # ---------------------------------------------------------------------------
-@app.get("/", tags=["System Information"])
+@app.get("/", response_class=HTMLResponse, tags=["Dashboard"])
+@app.get("/dashboard", response_class=HTMLResponse, tags=["Dashboard"])
+async def serve_dashboard():
+    """Serves the interactive clinical laboratory web dashboard."""
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return HTMLResponse("<h2>Dashboard index.html not found. Please verify deployment/static/index.html</h2>")
+
+@app.get("/api/info", tags=["System Information"])
 async def root_info():
     """Returns basic scoring service operational metadata."""
     uptime_sec = time.time() - ml_assets["start_time"]
@@ -240,8 +258,17 @@ async def root_info():
         "intended_use": "Pathologist assistive triage & second-opinion flag",
         "uptime_seconds": round(uptime_sec, 2),
         "docs_url": "/docs",
-        "endpoints": ["/health", "/model-info", "/predict", "/batch-predict", "/lis/webhook"]
+        "endpoints": ["/", "/dashboard", "/health", "/model-info", "/predict", "/batch-predict", "/lis/webhook", "/api/sample-cases"]
     }
+
+@app.get("/api/sample-cases", tags=["Scoring Engine"])
+async def get_sample_cases():
+    """Provides curated real-world biopsy sample cases for examiner demonstration."""
+    sample_path = os.path.join(MODELS_DIR, "sample_cases.json")
+    if os.path.exists(sample_path):
+        with open(sample_path, "r") as f:
+            return json.load(f)
+    raise HTTPException(status_code=404, detail="Sample cases registry not found.")
 
 @app.get("/health", tags=["System Information"])
 async def health_check():
@@ -287,7 +314,8 @@ async def predict_sample(payload: SinglePredictionRequest):
 
     # Standardize if required
     if not payload.is_standardized:
-        X_eval = scaler.transform(X_raw)
+        X_eval_arr = scaler.transform(X_raw)
+        X_eval = pd.DataFrame(X_eval_arr, columns=feature_names)
     else:
         X_eval = X_raw
 
@@ -303,13 +331,13 @@ async def predict_sample(payload: SinglePredictionRequest):
     label = "Malignant" if y_pred == 1 else "Benign"
 
     # Identify top 3 features by standardized magnitude deviation
-    std_magnitudes = np.abs(X_eval[0])
-    top_indices = np.argsort(std_magnitudes)[::-1][:3]
+    eval_vals = X_eval.values[0]
+    top_indices = np.argsort(np.abs(eval_vals))[::-1][:3]
     top_biomarkers = [
         {
             "biomarker": feature_names[i],
-            "standardized_zscore": round(float(X_eval[0, i]), 3),
-            "raw_value": round(float(X_raw[0, i]), 4)
+            "standardized_zscore": round(float(eval_vals[i]), 3),
+            "raw_value": round(float(X_raw.iloc[0, i]), 4)
         }
         for i in top_indices
     ]

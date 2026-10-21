@@ -1,0 +1,212 @@
+{
+  "radius_mean": {
+    "min": 6.981,
+    "max": 28.11,
+    "mean": 14.127,
+    "benign_mean": 12.147,
+    "malignant_mean": 17.463
+  },
+  "texture_mean": {
+    "min": 9.71,
+    "max": 39.28,
+    "mean": 19.29,
+    "benign_mean": 17.915,
+    "malignant_mean": 21.605
+  },
+  "perimeter_mean": {
+    "min": 43.79,
+    "max": 188.5,
+    "mean": 91.969,
+    "benign_mean": 78.075,
+    "malignant_mean": 115.365
+  },
+  "area_mean": {
+    "min": 143.5,
+    "max": 2501.0,
+    "mean": 654.889,
+    "benign_mean": 462.79,
+    "malignant_mean": 978.376
+  },
+  "smoothness_mean": {
+    "min": 0.053,
+    "max": 0.163,
+    "mean": 0.096,
+    "benign_mean": 0.092,
+    "malignant_mean": 0.103
+  },
+  "compactness_mean": {
+    "min": 0.019,
+    "max": 0.345,
+    "mean": 0.104,
+    "benign_mean": 0.08,
+    "malignant_mean": 0.145
+  },
+  "concavity_mean": {
+    "min": 0.0,
+    "max": 0.427,
+    "mean": 0.089,
+    "benign_mean": 0.046,
+    "malignant_mean": 0.161
+  },
+  "concave_points_mean": {
+    "min": 0.0,
+    "max": 0.201,
+    "mean": 0.049,
+    "benign_mean": 0.026,
+    "malignant_mean": 0.088
+  },
+  "symmetry_mean": {
+    "min": 0.106,
+    "max": 0.304,
+    "mean": 0.181,
+    "benign_mean": 0.174,
+    "malignant_mean": 0.193
+  },
+  "fractal_dimension_mean": {
+    "min": 0.05,
+    "max": 0.097,
+    "mean": 0.063,
+    "benign_mean": 0.063,
+    "malignant_mean": 0.063
+  },
+  "radius_se": {
+    "min": 0.112,
+    "max": 2.873,
+    "mean": 0.405,
+    "benign_mean": 0.284,
+    "malignant_mean": 0.609
+  },
+  "texture_se": {
+    "min": 0.36,
+    "max": 4.885,
+    "mean": 1.217,
+    "benign_mean": 1.22,
+    "malignant_mean": 1.211
+  },
+  "perimeter_se": {
+    "min": 0.757,
+    "max": 21.98,
+    "mean": 2.866,
+    "benign_mean": 2.0,
+    "malignant_mean": 4.324
+  },
+  "area_se": {
+    "min": 6.802,
+    "max": 542.2,
+    "mean": 40.337,
+    "benign_mean": 21.135,
+    "malignant_mean": 72.672
+  },
+  "smoothness_se": {
+    "min": 0.002,
+    "max": 0.031,
+    "mean": 0.007,
+    "benign_mean": 0.007,
+    "malignant_mean": 0.007
+  },
+  "compactness_se": {
+    "min": 0.002,
+    "max": 0.135,
+    "mean": 0.025,
+    "benign_mean": 0.021,
+    "malignant_mean": 0.032
+  },
+  "concavity_se": {
+    "min": 0.0,
+    "max": 0.396,
+    "mean": 0.032,
+    "benign_mean": 0.026,
+    "malignant_mean": 0.042
+  },
+  "concave_points_se": {
+    "min": 0.0,
+    "max": 0.053,
+    "mean": 0.012,
+    "benign_mean": 0.01,
+    "malignant_mean": 0.015
+  },
+  "symmetry_se": {
+    "min": 0.008,
+    "max": 0.079,
+    "mean": 0.021,
+    "benign_mean": 0.021,
+    "malignant_mean": 0.02
+  },
+  "fractal_dimension_se": {
+    "min": 0.001,
+    "max": 0.03,
+    "mean": 0.004,
+    "benign_mean": 0.004,
+    "malignant_mean": 0.004
+  },
+  "radius_worst": {
+    "min": 7.93,
+    "max": 36.04,
+    "mean": 16.269,
+    "benign_mean": 13.38,
+    "malignant_mean": 21.135
+  },
+  "texture_worst": {
+    "min": 12.02,
+    "max": 49.54,
+    "mean": 25.677,
+    "benign_mean": 23.515,
+    "malignant_mean": 29.318
+  },
+  "perimeter_worst": {
+    "min": 50.41,
+    "max": 251.2,
+    "mean": 107.261,
+    "benign_mean": 87.006,
+    "malignant_mean": 141.37
+  },
+  "area_worst": {
+    "min": 185.2,
+    "max": 4254.0,
+    "mean": 880.583,
+    "benign_mean": 558.899,
+    "malignant_mean": 1422.286
+  },
+  "smoothness_worst": {
+    "min": 0.071,
+    "max": 0.223,
+    "mean": 0.132,
+    "benign_mean": 0.125,
+    "malignant_mean": 0.145
+  },
+  "compactness_worst": {
+    "min": 0.027,
+    "max": 1.058,
+    "mean": 0.254,
+    "benign_mean": 0.183,
+    "malignant_mean": 0.375
+  },
+  "concavity_worst": {
+    "min": 0.0,
+    "max": 1.252,
+    "mean": 0.272,
+    "benign_mean": 0.166,
+    "malignant_mean": 0.451
+  },
+  "concave_points_worst": {
+    "min": 0.0,
+    "max": 0.291,
+    "mean": 0.115,
+    "benign_mean": 0.074,
+    "malignant_mean": 0.182
+  },
+  "symmetry_worst": {
+    "min": 0.157,
+    "max": 0.664,
+    "mean": 0.29,
+    "benign_mean": 0.27,
+    "malignant_mean": 0.323
+  },
+  "fractal_dimension_worst": {
+    "min": 0.055,
+    "max": 0.207,
+    "mean": 0.084,
+    "benign_mean": 0.079,
+    "malignant_mean": 0.092
+  }
+}

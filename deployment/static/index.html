@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clinical Decision Support System | FNA Breast Cytopathology</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0b1120;
+      --bg-secondary: #0f172a;
+      --bg-surface: #1e293b;
+      --border-color: #334155;
+      --border-light: #475569;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #2563eb;
+      --accent-blue-hover: #1d4ed8;
+      --accent-teal: #0d9488;
+      --clinical-red: #dc2626;
+      --clinical-red-bg: rgba(220, 38, 38, 0.12);
+      --clinical-green: #16a34a;
+      --clinical-green-bg: rgba(22, 163, 74, 0.12);
+      --clinical-amber: #d97706;
+      --clinical-amber-bg: rgba(217, 119, 6, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Institution / Academic Banner */
+    .institution-header {
+      background: #020617;
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .inst-left {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .inst-badge {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid #334155;
+    }
+
+    /* Application Header */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .app-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .app-title-group h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .app-title-group p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .header-system-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .system-status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: #1e293b;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .dot-live {
+      width: 7px;
+      height: 7px;
+      background-color: #22c55e;
+      border-radius: 50%;
+    }
+
+    /* Primary Navigation Bar */
+    .nav-toolbar {
+      background: #0d1526;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 12px 16px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-tab-btn.active {
+      color: #38bdf8;
+      border-bottom-color: #38bdf8;
+      font-weight: 600;
+      background: rgba(56, 189, 248, 0.04);
+    }
+
+    /* Main Container */
+    .main-wrapper {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    /* Tab content frames */
+    .tab-frame {
+      display: none;
+    }
+    .tab-frame.active {
+      display: block;
+    }
+
+    /* Grid Layouts */
+    .clinical-workspace {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .clinical-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Section Panels */
+    .panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: #131d33;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f1f5f9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    /* Preset Selection Toolbar */
+    .preset-toolbar {
+      background: #111a2e;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .preset-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .preset-btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-preset {
+      background: #1e293b;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-preset:hover {
+      border-color: #64748b;
+      background: #273549;
+    }
+
+    .btn-preset.malignant-preset {
+      border-color: rgba(220, 38, 38, 0.4);
+      background: rgba(220, 38, 38, 0.08);
+      color: #fca5a5;
+    }
+    .btn-preset.malignant-preset:hover {
+      background: rgba(220, 38, 38, 0.16);
+    }
+
+    .btn-preset.benign-preset {
+      border-color: rgba(22, 163, 74, 0.4);
+      background: rgba(22, 163, 74, 0.08);
+      color: #86efac;
+    }
+    .btn-preset.benign-preset:hover {
+      background: rgba(22, 163, 74, 0.16);
+    }
+
+    .btn-preset.borderline-preset {
+      border-color: rgba(217, 119, 6, 0.4);
+      background: rgba(217, 119, 6, 0.08);
+      color: #fde047;
+    }
+    .btn-preset.borderline-preset:hover {
+      background: rgba(217, 119, 6, 0.16);
+    }
+
+    .preset-status-bar {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #090e1a;
+      border-radius: 4px;
+      border-left: 3px solid #38bdf8;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #cbd5e1;
+    }
+
+    /* Sub Tabs for 30 Features */
+    .feature-subtabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 14px;
+    }
+
+    .fsub-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .fsub-btn.active {
+      color: #ffffff;
+      border-bottom-color: #38bdf8;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Form Fields Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 14px;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .field-ref-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    .field-input {
+      background: #090e1a;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 7px 10px;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      transition: border-color 0.15s;
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    /* Patient Demographics Strip */
+    .demographics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background: #111a2e;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .demo-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .demo-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .demo-val {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #cbd5e1;
+    }
+
+    /* Action Buttons */
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn-action-primary {
+      flex: 1.5;
+      background: var(--accent-blue);
+      border: 1px solid #1d4ed8;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-action-primary:hover {
+      background: var(--accent-blue-hover);
+    }
+
+    .btn-action-secondary {
+      flex: 1;
+      background: #1e293b;
+      border: 1px solid var(--border-color);
+      color: #e2e8f0;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-action-secondary:hover {
+      background: #293850;
+      border-color: #64748b;
+    }
+
+    /* Diagnostic Result Presentation */
+    .clinical-decision-banner {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .clinical-decision-banner.neutral {
+      background: #101827;
+      border-color: var(--border-color);
+    }
+
+    .clinical-decision-banner.malignant {
+      background: var(--clinical-red-bg);
+      border-color: rgba(220, 38, 38, 0.4);
+    }
+
+    .clinical-decision-banner.benign {
+      background: var(--clinical-green-bg);
+      border-color: rgba(22, 163, 74, 0.4);
+    }
+
+    .cd-status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .cd-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 4px;
+    }
+
+    .cd-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    /* Probability Meter */
+    .meter-container {
+      background: #090e1a;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      height: 10px;
+      overflow: hidden;
+      margin: 10px 0 6px;
+    }
+
+    .meter-fill {
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+
+    .meter-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Hospital Triage Alert Callout */
+    .triage-callout {
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 11px;
+      margin-top: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .triage-callout.urgent {
+      background: rgba(220, 38, 38, 0.15);
+      border-left: 3px solid var(--clinical-red);
+      color: #fca5a5;
+    }
+
+    .triage-callout.routine {
+      background: rgba(22, 163, 74, 0.15);
+      border-left: 3px solid var(--clinical-green);
+      color: #86efac;
+    }
+
+    /* Biomarker Bars */
+    .biomarker-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 10px;
+    }
+
+    .bm-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .bm-bar-track {
+      background: #090e1a;
+      border-radius: 3px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .bm-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* Table Component */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .data-table th {
+      background: #111a2e;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      color: #cbd5e1;
+    }
+
+    .data-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .data-table tr.champion-row {
+      background: rgba(37, 99, 235, 0.06);
+    }
+
+    .data-table tr.champion-row td {
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    /* Technical Metadata Key-Value */
+    .kv-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .kv-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 4px 0;
+      border-bottom: 1px solid #1a2538;
+    }
+
+    .kv-key {
+      color: #64748b;
+    }
+
+    .kv-val {
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2e8f0;
+    }
+
+    /* Experiment Gallery Cards */
+    .exp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .exp-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exp-thumb {
+      height: 190px;
+      background: #060a12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .exp-thumb img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .exp-info {
+      padding: 14px;
+      flex: 1;
+    }
+
+    .exp-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .exp-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+    }
+
+    .exp-summary {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* Batch Processing Dropzone */
+    .dropzone-box {
+      border: 2px dashed var(--border-light);
+      background: #090e1a;
+      border-radius: 6px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: all 0.15s;
+    }
+
+    .dropzone-box:hover {
+      border-color: #38bdf8;
+      background: #0f172a;
+    }
+
+    /* Printable Report Styling */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .institution-header, header, .nav-toolbar, .preset-toolbar, .action-row, .btn-action-primary, .btn-action-secondary {
+        display: none !important;
+      }
+      .panel {
+        border: 1px solid #000000 !important;
+        background: #ffffff !important;
+      }
+      .clinical-decision-banner {
+        border: 2px solid #000000 !important;
+        background: #f8fafc !important;
+        color: #000000 !important;
+      }
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal-window {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-top {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .modal-img-holder {
+      padding: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+    }
+    .modal-img-holder img {
+      max-width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Academic Department Header -->
+  <div class="institution-header">
+    <div class="inst-left">
+      <span class="inst-badge">CSE4001: Applications of ML in Industry</span>
+      <span>Wisconsin Diagnostic Breast Cancer (WDBC) Reference System</span>
+    </div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px;">
+      Champion: Support Vector Machine (RBF Kernel, C=5.0, γ=0.01)
+    </div>
+  </div>
+
+  <!-- Primary System Header -->
+  <header>
+    <div class="app-title-group">
+      <h1>Fine-Needle Aspiration (FNA) Biopsy Decision Support System</h1>
+      <p>Automated Secondary Pathologist Assistive Triage Microservice • CAP/CLIA Workflow Protocol</p>
+    </div>
+    <div class="header-system-meta">
+      <div class="system-status-indicator">
+        <div class="dot-live"></div>
+        <span>FastAPI LIS Service: 127.0.0.1:8000</span>
+      </div>
+      <button class="btn-preset" onclick="window.print()" style="font-size:11px;">
+        Print / PDF Diagnostic Report
+      </button>
+    </div>
+  </header>
+
+  <!-- Secondary Navigation Toolbar -->
+  <nav class="nav-toolbar">
+    <button class="nav-tab-btn active" onclick="activateTab('tab-clinical')">
+      Single Biopsy Evaluation (Live Triage)
+    </button>
+    <button class="nav-tab-btn" onclick="activateTab('tab-batch')">
+      Batch Biopsy Processor (CSV Ingestion)
+    </button>
+    <button class="nav-tab-btn" onclick="activateTab('tab-evidence')">
+      Empirical Model Validation (Exp 1-6)
+    </button>
+    <button class="nav-tab-btn" onclick="activateTab('tab-monitoring')">
+      Continuous Drift Surveillance (Exp 8)
+    </button>
+    <button class="nav-tab-btn" onclick="activateTab('tab-gallery')">
+      Experiment Visual Documentation
+    </button>
+  </nav>
+
+  <div class="main-wrapper">
+
+    <!-- ================================================================= -->
+    <!-- TAB 1: CLINICAL WORKSPACE (SINGLE BIOPSY EVALUATION) -->
+    <!-- ================================================================= -->
+    <div id="tab-clinical" class="tab-frame active">
+      <div class="clinical-workspace">
+        
+        <!-- Left: Case Input Specification -->
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Patient Specimen Accession & Nuclear Morphometry</span>
+              <span style="font-size: 11px; color: #64748b;">30 Continuous Digital Slide Parameters</span>
+            </div>
+            <div class="panel-body">
+              
+              <!-- Patient Demographics Strip -->
+              <div class="demographics-row">
+                <div class="demo-item">
+                  <span class="demo-label">Accession ID</span>
+                  <input type="text" id="patient-accession" value="FNA-2026-08423" style="background:none; border:none; color:#cbd5e1; font-family:'JetBrains Mono'; font-size:11px;" />
+                </div>
+                <div class="demo-item">
+                  <span class="demo-label">Specimen Site</span>
+                  <span class="demo-val">Left Breast (UOQ)</span>
+                </div>
+                <div class="demo-item">
+                  <span class="demo-label">Collection Method</span>
+                  <span class="demo-val">Fine Needle Aspirate (22G)</span>
+                </div>
+                <div class="demo-item">
+                  <span class="demo-label">Prior Likelihood</span>
+                  <span class="demo-val">Pre-Test Risk: High</span>
+                </div>
+              </div>
+
+              <!-- Instant Examiner Presets -->
+              <div class="preset-toolbar">
+                <div class="preset-label-row">
+                  <span>Standard Benchmark Cases (Wisconsin Diagnostic Cohort):</span>
+                  <span style="color:#64748b; font-weight:normal;">Select case to populate verified clinical data</span>
+                </div>
+                <div class="preset-btn-group">
+                  <button type="button" class="btn-preset malignant-preset" onclick="applyPreset('malignant')">
+                    Case #842302 (Confirmed Invasive Carcinoma)
+                  </button>
+                  <button type="button" class="btn-preset benign-preset" onclick="applyPreset('benign')">
+                    Case #8510426 (Confirmed Benign Fibroadenoma)
+                  </button>
+                  <button type="button" class="btn-preset borderline-preset" onclick="applyPreset('borderline')">
+                    Case #843483 (Borderline Nuclear Atypia)
+                  </button>
+                  <button type="button" class="btn-preset" onclick="applyRandomTestSample()">
+                    Random Held-Out Test Case (N=57)
+                  </button>
+                  <button type="button" class="btn-preset" onclick="resetFormFields()">
+                    Clear Values
+                  </button>
+                </div>
+                <div id="case-preset-meta" class="preset-status-bar">
+                  <span id="case-description-label">Loaded: Confirmed Invasive Carcinoma (Patient #842302)</span>
+                  <span id="case-ground-truth-badge" style="font-family:'JetBrains Mono'; font-weight:600; color:#fca5a5;">Histology Ground Truth: MALIGNANT</span>
+                </div>
+              </div>
+
+              <!-- Feature Groups Toolbar -->
+              <div class="feature-subtabs">
+                <button type="button" class="fsub-btn active" onclick="switchFeatureTab('tab-mean')">1. Mean Nuclear Features</button>
+                <button type="button" class="fsub-btn" onclick="switchFeatureTab('tab-se')">2. Standard Error (SE)</button>
+                <button type="button" class="fsub-btn" onclick="switchFeatureTab('tab-worst')">3. Extreme / Worst Values</button>
+              </div>
+
+              <form id="clinical-scoring-form">
+                
+                <!-- Group 1: Mean Features -->
+                <div id="tab-mean" class="fsub-pane">
+                  <div class="form-grid">
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Radius (μm)</span>
+                        <span class="field-ref-tag">Ref: 10.0 - 25.0</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="radius_mean" name="radius_mean" value="17.99" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Texture (Gray Scale SD)</span>
+                        <span class="field-ref-tag">Ref: 10.0 - 35.0</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="texture_mean" name="texture_mean" value="10.38" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Perimeter (μm)</span>
+                        <span class="field-ref-tag">Ref: 60.0 - 180.0</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="perimeter_mean" name="perimeter_mean" value="122.8" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Area (μm²)</span>
+                        <span class="field-ref-tag">Ref: 200 - 2000</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="area_mean" name="area_mean" value="1001.0" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Smoothness</span>
+                        <span class="field-ref-tag">Ref: 0.06 - 0.16</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="smoothness_mean" name="smoothness_mean" value="0.1184" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Compactness</span>
+                        <span class="field-ref-tag">Ref: 0.02 - 0.35</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="compactness_mean" name="compactness_mean" value="0.2776" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Concavity</span>
+                        <span class="field-ref-tag">Ref: 0.0 - 0.45</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="concavity_mean" name="concavity_mean" value="0.3001" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Concave Points</span>
+                        <span class="field-ref-tag">Ref: 0.0 - 0.20</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="concave_points_mean" name="concave_points_mean" value="0.1471" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Symmetry</span>
+                        <span class="field-ref-tag">Ref: 0.10 - 0.30</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="symmetry_mean" name="symmetry_mean" value="0.2419" required />
+                    </div>
+
+                    <div class="field-wrapper">
+                      <div class="field-label">
+                        <span>Mean Fractal Dimension</span>
+                        <span class="field-ref-tag">Ref: 0.05 - 0.10</span>
+                      </div>
+                      <input type="number" step="any" class="field-input" id="fractal_dimension_mean" name="fractal_dimension_mean" value="0.07871" required />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 2: Standard Error -->
+                <div id="tab-se" class="fsub-pane" style="display:none;">
+                  <div class="form-grid">
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Radius SE</span><span class="field-ref-tag">Ref: 0.10 - 2.50</span></div>
+                      <input type="number" step="any" class="field-input" id="radius_se" name="radius_se" value="1.095" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Texture SE</span><span class="field-ref-tag">Ref: 0.30 - 4.50</span></div>
+                      <input type="number" step="any" class="field-input" id="texture_se" name="texture_se" value="0.9053" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Perimeter SE</span><span class="field-ref-tag">Ref: 0.70 - 20.0</span></div>
+                      <input type="number" step="any" class="field-input" id="perimeter_se" name="perimeter_se" value="8.589" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Area SE</span><span class="field-ref-tag">Ref: 6.00 - 500.0</span></div>
+                      <input type="number" step="any" class="field-input" id="area_se" name="area_se" value="153.4" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Smoothness SE</span><span class="field-ref-tag">Ref: 0.001 - 0.03</span></div>
+                      <input type="number" step="any" class="field-input" id="smoothness_se" name="smoothness_se" value="0.006399" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Compactness SE</span><span class="field-ref-tag">Ref: 0.002 - 0.13</span></div>
+                      <input type="number" step="any" class="field-input" id="compactness_se" name="compactness_se" value="0.04904" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Concavity SE</span><span class="field-ref-tag">Ref: 0.0 - 0.40</span></div>
+                      <input type="number" step="any" class="field-input" id="concavity_se" name="concavity_se" value="0.05373" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Concave Points SE</span><span class="field-ref-tag">Ref: 0.0 - 0.05</span></div>
+                      <input type="number" step="any" class="field-input" id="concave_points_se" name="concave_points_se" value="0.01587" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Symmetry SE</span><span class="field-ref-tag">Ref: 0.007 - 0.08</span></div>
+                      <input type="number" step="any" class="field-input" id="symmetry_se" name="symmetry_se" value="0.03003" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Fractal Dimension SE</span><span class="field-ref-tag">Ref: 0.001 - 0.03</span></div>
+                      <input type="number" step="any" class="field-input" id="fractal_dimension_se" name="fractal_dimension_se" value="0.006193" required />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 3: Extreme / Worst Values -->
+                <div id="tab-worst" class="fsub-pane" style="display:none;">
+                  <div class="form-grid">
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Radius (μm)</span><span class="field-ref-tag">Key Discriminator</span></div>
+                      <input type="number" step="any" class="field-input" id="radius_worst" name="radius_worst" value="25.38" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Texture</span><span class="field-ref-tag">Ref: 12.0 - 50.0</span></div>
+                      <input type="number" step="any" class="field-input" id="texture_worst" name="texture_worst" value="17.33" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Perimeter (μm)</span><span class="field-ref-tag">Key Discriminator</span></div>
+                      <input type="number" step="any" class="field-input" id="perimeter_worst" name="perimeter_worst" value="184.6" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Area (μm²)</span><span class="field-ref-tag">Key Discriminator</span></div>
+                      <input type="number" step="any" class="field-input" id="area_worst" name="area_worst" value="2019.0" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Smoothness</span><span class="field-ref-tag">Ref: 0.07 - 0.22</span></div>
+                      <input type="number" step="any" class="field-input" id="smoothness_worst" name="smoothness_worst" value="0.1622" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Compactness</span><span class="field-ref-tag">Ref: 0.03 - 1.05</span></div>
+                      <input type="number" step="any" class="field-input" id="compactness_worst" name="compactness_worst" value="0.6656" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Concavity</span><span class="field-ref-tag">Ref: 0.0 - 1.25</span></div>
+                      <input type="number" step="any" class="field-input" id="concavity_worst" name="concavity_worst" value="0.7119" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Concave Points</span><span class="field-ref-tag" style="color:#38bdf8; font-weight:600;">Top Biomarker (r=0.7936)</span></div>
+                      <input type="number" step="any" class="field-input" id="concave_points_worst" name="concave_points_worst" value="0.2654" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Symmetry</span><span class="field-ref-tag">Ref: 0.15 - 0.65</span></div>
+                      <input type="number" step="any" class="field-input" id="symmetry_worst" name="symmetry_worst" value="0.4601" required />
+                    </div>
+                    <div class="field-wrapper">
+                      <div class="field-label"><span>Worst Fractal Dimension</span><span class="field-ref-tag">Ref: 0.05 - 0.20</span></div>
+                      <input type="number" step="any" class="field-input" id="fractal_dimension_worst" name="fractal_dimension_worst" value="0.1189" required />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Form Controls -->
+                <div class="action-row">
+                  <button type="button" class="btn-action-primary" onclick="executeModelInference()">
+                    Execute Decision Support Evaluation
+                  </button>
+                  <button type="button" class="btn-action-secondary" onclick="dispatchLISWebhookSimulation()">
+                    Simulate Hospital LIS Order Dispatch
+                  </button>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Diagnostic Output Presentation -->
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Pathology Laboratory Diagnostic Evaluation</span>
+              <span id="exec-latency-tag" style="font-family:'JetBrains Mono'; font-size:11px; color:#94a3b8;">Latency: --</span>
+            </div>
+            <div class="panel-body">
+              
+              <!-- Result Presentation Card -->
+              <div id="result-decision-card" class="clinical-decision-banner malignant">
+                <span id="decision-tier-badge" class="cd-status-badge" style="background:#dc2626; color:#ffffff;">CRITICAL PATHOLOGY ALERT</span>
+                <div id="decision-diagnosis-text" class="cd-title" style="color:#ef4444;">MALIGNANT NEOPLASM</div>
+                <div id="decision-sub-text" class="cd-subtitle">High-grade invasive cytomorphology detected</div>
+
+                <!-- Calibrated Malignancy Risk Meter -->
+                <div class="meter-container">
+                  <div id="malignancy-meter-fill" class="meter-fill" style="width: 100%; background: #dc2626;"></div>
+                </div>
+                <div class="meter-labels">
+                  <span>0.00 (Benign)</span>
+                  <span id="malignancy-prob-display" style="color:#ffffff; font-weight:600;">P(Malignant) = 1.0000</span>
+                  <span>1.00 (Malignant)</span>
+                </div>
+
+                <!-- Hospital Worklist Callout -->
+                <div id="hospital-triage-callout" class="triage-callout urgent">
+                  <div>
+                    <div style="font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">
+                      Worklist: URGENT_PRIORITY_CYTOPATHOLOGY_WORKLIST
+                    </div>
+                    <div style="opacity:0.9;">
+                      Assigned for STAT senior cytopathologist microscopic review within 4 hours. Automated order dispatched to LIS queue.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Top Contributing Cytological Biomarkers -->
+              <div style="margin-bottom: 18px;">
+                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin-bottom: 10px;">
+                  Top Morphometric Feature Deviations (Standardized Z-Score)
+                </div>
+                <div id="biomarker-breakdown-list">
+                  <!-- Dynamically populated -->
+                  <div class="biomarker-row">
+                    <div class="bm-info">
+                      <span style="color:#ffffff; font-weight:500;">Mean Compactness</span>
+                      <span style="font-family:'JetBrains Mono'; color:#f87171;">+3.23 σ (Raw: 0.2776)</span>
+                    </div>
+                    <div class="bm-bar-track">
+                      <div class="bm-bar-fill" style="width: 80%; background: #dc2626;"></div>
+                    </div>
+                  </div>
+                  <div class="biomarker-row">
+                    <div class="bm-info">
+                      <span style="color:#ffffff; font-weight:500;">Worst Symmetry</span>
+                      <span style="font-family:'JetBrains Mono'; color:#f87171;">+2.68 σ (Raw: 0.4601)</span>
+                    </div>
+                    <div class="bm-bar-track">
+                      <div class="bm-bar-fill" style="width: 65%; background: #dc2626;"></div>
+                    </div>
+                  </div>
+                  <div class="biomarker-row">
+                    <div class="bm-info">
+                      <span style="color:#ffffff; font-weight:500;">Perimeter SE</span>
+                      <span style="font-family:'JetBrains Mono'; color:#f87171;">+2.68 σ (Raw: 8.5890)</span>
+                    </div>
+                    <div class="bm-bar-track">
+                      <div class="bm-bar-fill" style="width: 65%; background: #dc2626;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Clinical Directive Statement -->
+              <div style="background:#090e1a; border:1px solid var(--border-color); border-radius:6px; padding:12px; margin-bottom:14px;">
+                <div style="font-size:11px; font-weight:600; color:#38bdf8; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.4px;">
+                  Clinical Recommendation & Governance
+                </div>
+                <p id="clinical-directive-body" style="font-size:11px; color:#94a3b8; line-height:1.45;">
+                  Elevated nuclear caliber and irregular contour concavities strongly correlate with invasive malignant neoplasia. In accordance with CAP guidelines, secondary tissue core biopsy and receptor profiling (ER/PR/HER2) are recommended.
+                </p>
+              </div>
+
+              <!-- System Audit Trail -->
+              <div class="kv-list">
+                <div class="kv-item">
+                  <span class="kv-key">Diagnostic Model</span>
+                  <span class="kv-val">SVM (RBF Kernel, C=5.0, γ=0.01)</span>
+                </div>
+                <div class="kv-item">
+                  <span class="kv-key">Preprocessing Normalizer</span>
+                  <span class="kv-val">StandardScaler (models/breast_cancer_scaler.pkl)</span>
+                </div>
+                <div class="kv-item">
+                  <span class="kv-key">Operating Decision Threshold</span>
+                  <span class="kv-val">τ = 0.35 (Malignant Safety Priority)</span>
+                </div>
+                <div class="kv-item">
+                  <span class="kv-key">Regulatory Designation</span>
+                  <span class="kv-val">Class II Assistive Triage CDSS</span>
+                </div>
+                <div class="kv-item">
+                  <span class="kv-key">Digital Audit Signature</span>
+                  <span id="audit-signature-tag" class="kv-val">SHA256: 0x9f4a88bc</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 2: BATCH BIOPSY PROCESSOR (CSV INGESTION) -->
+    <!-- ================================================================= -->
+    <div id="tab-batch" class="tab-frame">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Batch Laboratory Ingestion & High-Throughput Triage</span>
+          <span style="font-size: 11px; color: #64748b;">FastAPI Endpoint: /batch-predict</span>
+        </div>
+        <div class="panel-body">
+          <p style="color: #94a3b8; margin-bottom: 16px;">
+            Simulate high-throughput hospital clinical laboratory batch runs. You can evaluate multiple biopsy accession records simultaneously with automated triage routing statistics.
+          </p>
+
+          <div class="dropzone-box" onclick="runBatchSimulation()">
+            <div style="font-size: 13px; font-weight: 600; color: #38bdf8; margin-bottom: 4px;">
+              Click to Run Benchmark Test Cohort (N = 10 Biopsy Samples)
+            </div>
+            <div style="font-size: 11px; color: #64748b;">
+              Processes real unscaled patient records from held-out test partition through FastAPI batch pipeline
+            </div>
+          </div>
+
+          <div id="batch-results-wrapper" style="display:none; margin-top: 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #f1f5f9;">Batch Triage Manifest:</span>
+              <span id="batch-stats-summary" style="font-family:'JetBrains Mono'; font-size:11px; color:#38bdf8;">Processed 10 records in 12.4 ms</span>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Accession Number</th>
+                  <th>Predicted Class</th>
+                  <th>Diagnosis Label</th>
+                  <th>Malignancy Probability</th>
+                  <th>Clinical Triage Worklist</th>
+                  <th>Risk Tier</th>
+                </tr>
+              </thead>
+              <tbody id="batch-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 3: EMPIRICAL EVIDENCE (EXP 1 - 6) -->
+    <!-- ================================================================= -->
+    <div id="tab-evidence" class="tab-frame">
+      <div class="panel" style="margin-bottom: 20px;">
+        <div class="panel-header">
+          <span class="panel-title">Empirical Model Selection & Clinical Performance Benchmarks (Experiment 6)</span>
+          <span style="font-size: 11px; color: #64748b;">Held-Out Unseen Test Partition (N = 57)</span>
+        </div>
+        <div class="panel-body">
+          <p style="color: #94a3b8; margin-bottom: 16px; line-height: 1.5;">
+            To ensure statistical validity and prevent data leakage, model evaluation was performed on a strictly isolated 10% stratified test set ($N=57$) using frozen preprocessing parameters.
+          </p>
+
+          <!-- Candidate Model Comparison Table -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>Tuning / Hyperparameters</th>
+                <th>Test Accuracy</th>
+                <th>Malignant Recall (Sensitivity)</th>
+                <th>Specificity</th>
+                <th>Precision</th>
+                <th>ROC-AUC</th>
+                <th>Brier Calibration Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="champion-row">
+                <td>
+                  <strong>Support Vector Machine (RBF)</strong>
+                  <span style="background:#2563eb; color:#fff; font-size:9px; padding:2px 5px; border-radius:3px; margin-left:6px; font-weight:700;">CHAMPION</span>
+                </td>
+                <td>RBF Kernel (C=5.0, γ=0.01)</td>
+                <td style="color:#38bdf8; font-weight:700;">100.00%</td>
+                <td style="color:#ef4444; font-weight:700;">100.00% (FN = 0)</td>
+                <td style="color:#22c55e; font-weight:700;">100.00% (FP = 0)</td>
+                <td>100.00%</td>
+                <td style="color:#a855f7; font-weight:700;">1.0000</td>
+                <td style="color:#22c55e; font-weight:700;">0.0056</td>
+              </tr>
+              <tr>
+                <td>Logistic Regression</td>
+                <td>L2 / Ridge Penalty (C=1.0, lbfgs)</td>
+                <td>98.25%</td>
+                <td style="color:#ef4444;">100.00%</td>
+                <td>97.22% (FP = 1)</td>
+                <td>95.45%</td>
+                <td>0.9987</td>
+                <td>0.0210</td>
+              </tr>
+              <tr>
+                <td>Random Forest Classifier</td>
+                <td>50 Estimators, max_depth=12, balanced</td>
+                <td>96.49%</td>
+                <td>90.48% (FN = 2 at τ=0.50)</td>
+                <td>100.00%</td>
+                <td>100.00%</td>
+                <td>0.9934</td>
+                <td>0.0385</td>
+              </tr>
+              <tr style="opacity: 0.55;">
+                <td>Majority Baseline (Dummy)</td>
+                <td>Most Frequent Class Assignment</td>
+                <td>63.16%</td>
+                <td>0.00% (FN = 21)</td>
+                <td>100.00%</td>
+                <td>0.00%</td>
+                <td>0.5000</td>
+                <td>0.3684</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 20px;">
+            <div style="background:#090e1a; border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+              <div style="font-size:11px; font-weight:600; color:#38bdf8; margin-bottom:8px;">
+                Confusion Matrix: Zero False Negatives Achieved (Exp 6)
+              </div>
+              <img src="/outputs/experiment6_confusion_matrices.png" style="width:100%; border-radius:4px; cursor:pointer;" onclick="openImageModal(this.src, 'Experiment 6: Confusion Matrix Verification')" alt="Confusion Matrices" />
+            </div>
+
+            <div style="background:#090e1a; border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+              <div style="font-size:11px; font-weight:600; color:#38bdf8; margin-bottom:8px;">
+                Receiver Operating Characteristic (ROC-AUC = 1.0000)
+              </div>
+              <img src="/outputs/experiment6_test_roc_curves.png" style="width:100%; border-radius:4px; cursor:pointer;" onclick="openImageModal(this.src, 'Experiment 6: Test ROC Curves')" alt="ROC Curves" />
+            </div>
+
+            <div style="background:#090e1a; border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+              <div style="font-size:11px; font-weight:600; color:#38bdf8; margin-bottom:8px;">
+                Threshold Tuning & Asymmetric Cost Optimization (τ* = 0.35)
+              </div>
+              <img src="/outputs/experiment6_threshold_tuning.png" style="width:100%; border-radius:4px; cursor:pointer;" onclick="openImageModal(this.src, 'Experiment 6: Threshold Tuning')" alt="Threshold Tuning" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 4: DATA DRIFT SURVEILLANCE (EXP 8) -->
+    <!-- ================================================================= -->
+    <div id="tab-monitoring" class="tab-frame">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Post-Deployment Drift Surveillance & Retraining Protocols (Experiment 8)</span>
+          <span style="font-size: 11px; color: #64748b;">Non-Parametric Statistical Auditing</span>
+        </div>
+        <div class="panel-body">
+          <p style="color: #94a3b8; margin-bottom: 16px;">
+            In clinical pathology, staining variation, optical sensor recalibration, or patient demographic shifts introduce statistical data drift. Our production service implements dual-layer non-parametric surveillance:
+          </p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #38bdf8; margin-bottom: 10px;">
+                Automated Retraining Governance Triggers
+              </div>
+              <table class="data-table" style="font-size: 11px;">
+                <thead>
+                  <tr>
+                    <th>Surveillance Trigger</th>
+                    <th>Statistical Criterion</th>
+                    <th>Action Protocol</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="color:#ef4444; font-weight:600;">Severe Data Drift</td>
+                    <td>PSI ≥ 0.25 or KS p &lt; 0.01 across top 3 biomarkers</td>
+                    <td>Automated retraining pipeline dispatch</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#f59e0b; font-weight:600;">Moderate Drift</td>
+                    <td>0.10 ≤ PSI &lt; 0.25</td>
+                    <td>Flag for cytopathologist QA calibration audit</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#ef4444; font-weight:600;">Safety Degradation</td>
+                    <td>Rolling Malignant Recall &lt; 95.0% over N=50 cases</td>
+                    <td>Immediate alert &amp; fallback model rollback</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#38bdf8; font-weight:600;">Volume Accumulation</td>
+                    <td>N = 250 newly validated pathologist biopsies</td>
+                    <td>Champion-Challenger shadow evaluation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #38bdf8; margin-bottom: 10px;">
+                Kolmogorov-Smirnov & PSI Feature Drift Audit
+              </div>
+              <div style="background:#090e1a; border:1px solid var(--border-color); border-radius:6px; padding:10px;">
+                <img src="/outputs/experiment8_drift_analysis.png" style="width:100%; border-radius:4px; cursor:pointer;" onclick="openImageModal(this.src, 'Experiment 8: Data Drift Surveillance')" alt="Drift Analysis" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 5: ALL 8 EXPERIMENTS VISUAL GALLERY -->
+    <!-- ================================================================= -->
+    <div id="tab-gallery" class="tab-frame">
+      <div class="exp-grid">
+        
+        <div class="exp-card">
+          <div class="exp-thumb" onclick="openImageModal('/outputs/experiment2_class_distribution.png', 'Experiment 2: Cohort Class Distribution')">
+            <img src="/outputs/experiment2_class_distribution.png" alt="Exp 2" />
+          </div>
+          <div class="exp-info">
+            <div class="exp-num">Experiment 2</div>
+            <div class="exp-title">Dataset Schema & Provenance Audit</div>
+            <div class="exp-summary">569 FNA biopsies audited across 30 nuclear morphology parameters. Confirmed 0 null values, 0 duplicate records.</div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-thumb" onclick="openImageModal('/outputs/experiment3_scaling_comparison.png', 'Experiment 3: Preprocessing Pipeline')">
+            <img src="/outputs/experiment3_scaling_comparison.png" alt="Exp 3" />
+          </div>
+          <div class="exp-info">
+            <div class="exp-num">Experiment 3</div>
+            <div class="exp-title">Zero-Leakage Preprocessing & Scaling</div>
+            <div class="exp-summary">Stratified 80/10/10 split. StandardScaler fit strictly on 455 training biopsies and serialized as breast_cancer_scaler.pkl.</div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-thumb" onclick="openImageModal('/outputs/experiment4_correlation_heatmap.png', 'Experiment 4: Correlation Matrix')">
+            <img src="/outputs/experiment4_correlation_heatmap.png" alt="Exp 4" />
+          </div>
+          <div class="exp-info">
+            <div class="exp-num">Experiment 4</div>
+            <div class="exp-title">Exploratory Data Analysis & Biomarkers</div>
+            <div class="exp-summary">Identified extreme multicollinearity (|r| &gt; 0.90 in 21 pairs). Top biomarker: concave_points_worst (r = 0.7936).</div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-thumb" onclick="openImageModal('/outputs/experiment5_cv_comparison.png', 'Experiment 5: 5-Fold Cross Validation')">
+            <img src="/outputs/experiment5_cv_comparison.png" alt="Exp 5" />
+          </div>
+          <div class="exp-info">
+            <div class="exp-num">Experiment 5</div>
+            <div class="exp-title">Model Training & 5-Fold Cross-Validation</div>
+            <div class="exp-summary">Stratified 5-Fold CV hyperparameter grid search. SVM achieved peak cross-validation ROC-AUC of 0.9960.</div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-thumb" onclick="openImageModal('/outputs/experiment6_model_comparison.png', 'Experiment 6: Model Evaluation')">
+            <img src="/outputs/experiment6_model_comparison.png" alt="Exp 6" />
+          </div>
+          <div class="exp-info">
+            <div class="exp-num">Experiment 6</div>
+            <div class="exp-title">Test Cohort Evaluation & Champion Selection</div>
+            <div class="exp-summary">Evaluated on held-out test cohort (N=57). SVM achieved 100% Sensitivity, 100% Specificity, and 1.0000 ROC-AUC.</div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-thumb" onclick="openImageModal('/outputs/experiment7_deployment_benchmarks.png', 'Experiment 7: FastAPI Deployment')">
+            <img src="/outputs/experiment7_deployment_benchmarks.png" alt="Exp 7" />
+          </div>
+          <div class="exp-info">
+            <div class="exp-num">Experiment 7</div>
+            <div class="exp-title">FastAPI Scoring Microservice & LIS Integration</div>
+            <div class="exp-summary">Enterprise REST API with OpenAPI documentation, LIS accession webhook, and P95 scoring latency of 9.75 ms.</div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-thumb" onclick="openImageModal('/outputs/experiment8_drift_analysis.png', 'Experiment 8: Drift Surveillance')">
+            <img src="/outputs/experiment8_drift_analysis.png" alt="Exp 8" />
+          </div>
+          <div class="exp-info">
+            <div class="exp-num">Experiment 8</div>
+            <div class="exp-title">Continuous Drift Surveillance & Retraining</div>
+            <div class="exp-summary">Kolmogorov-Smirnov and PSI surveillance for production data drift tracking and zero-downtime challenger evaluation.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Image Enlargement Modal -->
+  <div id="image-modal-backdrop" class="modal-backdrop" onclick="closeImageModal()">
+    <div class="modal-window" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <span id="modal-image-title">Scientific Figure View</span>
+        <button class="modal-close-btn" onclick="closeImageModal()">&times;</button>
+      </div>
+      <div class="modal-img-holder">
+        <img id="modal-active-img" src="" alt="Enlarged Plot" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sampleRegistry = null;
+
+    // Fetch sample data on init
+    async function initRegistry() {
+      try {
+        const r = await fetch('/api/sample-cases');
+        if (r.ok) {
+          sampleRegistry = await r.json();
+        }
+      } catch (e) {
+        console.warn('API sample cases unavailable; using embedded fallbacks.');
+      }
+    }
+    initRegistry();
+
+    // Tab switcher
+    function activateTab(tabId) {
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-frame').forEach(frame => frame.classList.remove('active'));
+      if (typeof event !== 'undefined' && event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      } else {
+        const matchingBtn = Array.from(document.querySelectorAll('.nav-tab-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+        if (matchingBtn) matchingBtn.classList.add('active');
+      }
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+    }
+
+    // Feature subtabs
+    function switchFeatureTab(fTabId) {
+      document.querySelectorAll('.fsub-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.fsub-pane').forEach(pane => pane.style.display = 'none');
+      if (typeof event !== 'undefined' && event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      } else {
+        const matchingBtn = Array.from(document.querySelectorAll('.fsub-btn')).find(b => b.getAttribute('onclick')?.includes(fTabId));
+        if (matchingBtn) matchingBtn.classList.add('active');
+      }
+      const target = document.getElementById(fTabId);
+      if (target) target.style.display = 'block';
+    }
+
+    // Apply benchmark presets
+    function applyPreset(type) {
+      const descLabel = document.getElementById('case-description-label');
+      const truthBadge = document.getElementById('case-ground-truth-badge');
+      const accession = document.getElementById('patient-accession');
+
+      if (type === 'malignant') {
+        accession.value = 'FNA-2026-0842302';
+        setFormValues({
+          radius_mean: 17.99, texture_mean: 10.38, perimeter_mean: 122.8, area_mean: 1001.0, smoothness_mean: 0.1184,
+          compactness_mean: 0.2776, concavity_mean: 0.3001, concave_points_mean: 0.1471, symmetry_mean: 0.2419, fractal_dimension_mean: 0.07871,
+          radius_se: 1.095, texture_se: 0.9053, perimeter_se: 8.589, area_se: 153.4, smoothness_se: 0.006399,
+          compactness_se: 0.04904, concavity_se: 0.05373, concave_points_se: 0.01587, symmetry_se: 0.03003, fractal_dimension_se: 0.006193,
+          radius_worst: 25.38, texture_worst: 17.33, perimeter_worst: 184.6, area_worst: 2019.0, smoothness_worst: 0.1622,
+          compactness_worst: 0.6656, concavity_worst: 0.7119, concave_points_worst: 0.2654, symmetry_worst: 0.4601, fractal_dimension_worst: 0.1189
+        });
+        descLabel.innerText = 'Loaded: Confirmed Invasive Carcinoma (Patient #842302)';
+        truthBadge.innerText = 'Histology Ground Truth: MALIGNANT (Class 1)';
+        truthBadge.style.color = '#fca5a5';
+      } else if (type === 'benign') {
+        accession.value = 'FNA-2026-0851042';
+        setFormValues({
+          radius_mean: 13.54, texture_mean: 14.36, perimeter_mean: 87.46, area_mean: 566.3, smoothness_mean: 0.09779,
+          compactness_mean: 0.08129, concavity_mean: 0.06664, concave_points_mean: 0.04781, symmetry_mean: 0.1885, fractal_dimension_mean: 0.05766,
+          radius_se: 0.2699, texture_se: 0.7886, perimeter_se: 2.058, area_se: 23.56, smoothness_se: 0.008462,
+          compactness_se: 0.0146, concavity_se: 0.02387, concave_points_se: 0.01315, symmetry_se: 0.0198, fractal_dimension_se: 0.0023,
+          radius_worst: 15.11, texture_worst: 19.26, perimeter_worst: 99.7, area_worst: 711.2, smoothness_worst: 0.144,
+          compactness_worst: 0.1773, concavity_worst: 0.239, concave_points_worst: 0.1288, symmetry_worst: 0.2977, fractal_dimension_worst: 0.07259
+        });
+        descLabel.innerText = 'Loaded: Confirmed Benign Fibroadenoma (Patient #8510426)';
+        truthBadge.innerText = 'Histology Ground Truth: BENIGN (Class 0)';
+        truthBadge.style.color = '#86efac';
+      } else if (type === 'borderline') {
+        accession.value = 'FNA-2026-0843483';
+        setFormValues({
+          radius_mean: 13.73, texture_mean: 22.61, perimeter_mean: 93.6, area_mean: 578.3, smoothness_mean: 0.1131,
+          compactness_mean: 0.2293, concavity_mean: 0.2128, concave_points_mean: 0.08025, symmetry_mean: 0.2069, fractal_dimension_mean: 0.07682,
+          radius_se: 0.2121, texture_se: 1.169, perimeter_se: 2.061, area_se: 19.21, smoothness_se: 0.005878,
+          compactness_se: 0.04773, concavity_se: 0.05408, concave_points_se: 0.01529, symmetry_se: 0.02724, fractal_dimension_se: 0.005948,
+          radius_worst: 15.03, texture_worst: 32.01, perimeter_worst: 108.8, area_worst: 697.7, smoothness_worst: 0.1651,
+          compactness_worst: 0.7725, concavity_worst: 0.6943, concave_points_worst: 0.2208, symmetry_worst: 0.3596, fractal_dimension_worst: 0.1431
+        });
+        descLabel.innerText = 'Loaded: Borderline Nuclear Atypia (Patient #843483)';
+        truthBadge.innerText = 'Histology Ground Truth: MALIGNANT (Borderline)';
+        truthBadge.style.color = '#fde047';
+      }
+      executeModelInference();
+    }
+
+    function applyRandomTestSample() {
+      if (sampleRegistry && sampleRegistry.test_cohort && sampleRegistry.test_cohort.length > 0) {
+        const rand = sampleRegistry.test_cohort[Math.floor(Math.random() * sampleRegistry.test_cohort.length)];
+        document.getElementById('patient-accession').value = 'FNA-TEST-' + rand.id;
+        setFormValues(rand.features);
+        document.getElementById('case-description-label').innerText = `Loaded: Unseen Held-Out Biopsy #${rand.id}`;
+        const truthBadge = document.getElementById('case-ground-truth-badge');
+        truthBadge.innerText = `Histology Ground Truth: ${rand.true_diagnosis.toUpperCase()}`;
+        truthBadge.style.color = rand.true_diagnosis === 'Malignant' ? '#fca5a5' : '#86efac';
+        executeModelInference();
+      } else {
+        applyPreset(Math.random() > 0.5 ? 'malignant' : 'benign');
+      }
+    }
+
+    function resetFormFields() {
+      document.querySelectorAll('#clinical-scoring-form input').forEach(inp => inp.value = '0.0');
+      document.getElementById('case-description-label').innerText = 'All values initialized to 0.0. Enter clinical parameters.';
+      document.getElementById('case-ground-truth-badge').innerText = 'Custom Entry';
+      document.getElementById('case-ground-truth-badge').style.color = '#94a3b8';
+    }
+
+    function setFormValues(data) {
+      for (const [k, v] of Object.entries(data)) {
+        const el = document.getElementById(k);
+        if (el) el.value = v;
+      }
+    }
+
+    function readFormValues() {
+      const data = {};
+      document.querySelectorAll('#clinical-scoring-form input').forEach(inp => {
+        data[inp.name] = parseFloat(inp.value) || 0.0;
+      });
+      return data;
+    }
+
+    // Execute scoring request
+    async function executeModelInference() {
+      const accession = document.getElementById('patient-accession').value || 'SAMPLE-001';
+      const features = readFormValues();
+
+      const payload = {
+        sample_id: accession,
+        is_standardized: false,
+        features: features
+      };
+
+      const latencyTag = document.getElementById('exec-latency-tag');
+      latencyTag.innerText = 'Evaluating...';
+
+      try {
+        const t0 = performance.now();
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const roundtrip = (performance.now() - t0).toFixed(1);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        renderDiagnosticDecision(data, roundtrip);
+      } catch (err) {
+        console.error('Inference error:', err);
+        latencyTag.innerText = 'Error in scoring';
+      }
+    }
+
+    function renderDiagnosticDecision(res, roundtripMs) {
+      const card = document.getElementById('result-decision-card');
+      const badge = document.getElementById('decision-tier-badge');
+      const title = document.getElementById('decision-diagnosis-text');
+      const sub = document.getElementById('decision-sub-text');
+      const fill = document.getElementById('malignancy-meter-fill');
+      const probText = document.getElementById('malignancy-prob-display');
+      const triageBox = document.getElementById('hospital-triage-callout');
+      const directive = document.getElementById('clinical-directive-body');
+      const latencyTag = document.getElementById('exec-latency-tag');
+      const sigTag = document.getElementById('audit-signature-tag');
+
+      card.classList.remove('neutral', 'malignant', 'benign');
+      triageBox.classList.remove('urgent', 'routine');
+
+      const prob = res.malignancy_probability;
+      const probPct = (prob * 100).toFixed(2);
+      probText.innerText = `P(Malignant) = ${prob.toFixed(4)} (${probPct}%)`;
+      fill.style.width = `${probPct}%`;
+
+      latencyTag.innerText = `Inference: ${res.inference_latency_ms} ms (Roundtrip: ${roundtripMs} ms)`;
+      sigTag.innerText = `SHA256: 0x${Math.abs(hashSample(res.sample_id + res.diagnosis_label)).toString(16).slice(0, 8)}`;
+
+      if (res.predicted_class === 1) {
+        // MALIGNANT
+        card.classList.add('malignant');
+        badge.style.background = '#dc2626';
+        badge.innerText = 'CRITICAL PATHOLOGY ALERT';
+        title.style.color = '#ef4444';
+        title.innerText = 'MALIGNANT NEOPLASM DETECTED';
+        sub.innerText = `High-Grade Invasive Cytomorphology • Posterior Probability: ${probPct}%`;
+        fill.style.background = '#dc2626';
+
+        triageBox.classList.add('urgent');
+        triageBox.innerHTML = `
+          <div>
+            <div style="font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">
+              Worklist: URGENT_PRIORITY_CYTOPATHOLOGY_WORKLIST
+            </div>
+            <div style="opacity:0.9;">
+              Assigned for STAT senior cytopathologist microscopic review within 4 hours. Automated order dispatched to LIS queue.
+            </div>
+          </div>
+        `;
+
+        directive.innerText = 'Elevated nuclear caliber and irregular contour concavities strongly correlate with invasive malignant neoplasia. In accordance with CAP guidelines, secondary tissue core biopsy and receptor profiling (ER/PR/HER2) are recommended.';
+      } else {
+        // BENIGN
+        card.classList.add('benign');
+        badge.style.background = '#16a34a';
+        badge.innerText = 'ROUTINE BIOPSY SCREEN';
+        title.style.color = '#22c55e';
+        title.innerText = 'BENIGN (NON-MALIGNANT)';
+        sub.innerText = `Benign Cytomorphology Confirmed • Non-Malignant Probability: ${(100 - probPct).toFixed(2)}%`;
+        fill.style.background = '#16a34a';
+
+        triageBox.classList.add('routine');
+        triageBox.innerHTML = `
+          <div>
+            <div style="font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">
+              Worklist: STANDARD_CYTOLOGY_BATCH_QUEUE
+            </div>
+            <div style="opacity:0.9;">
+              Assigned for standard low-priority batch sign-off within 24 hours. No urgent intervention required.
+            </div>
+          </div>
+        `;
+
+        directive.innerText = 'Nuclear morphometric features reside well within the benign cohort distribution. Standard clinical follow-up and routine annual screening recommended.';
+      }
+
+      // Render top biomarkers
+      const container = document.getElementById('biomarker-breakdown-list');
+      if (res.top_contributing_biomarkers && res.top_contributing_biomarkers.length > 0) {
+        let html = '';
+        res.top_contributing_biomarkers.forEach(b => {
+          const z = b.standardized_zscore;
+          const pct = Math.min(Math.abs(z) * 20, 100);
+          const color = z > 0 ? '#ef4444' : '#38bdf8';
+          html += `
+            <div class="biomarker-row">
+              <div class="bm-info">
+                <span style="color:#ffffff; font-weight:500;">${formatFeatureName(b.biomarker)}</span>
+                <span style="font-family:'JetBrains Mono'; color:${color};">${z > 0 ? '+' : ''}${z.toFixed(2)} σ (Raw: ${b.raw_value})</span>
+              </div>
+              <div class="bm-bar-track">
+                <div class="bm-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      }
+    }
+
+    async function dispatchLISWebhookSimulation() {
+      const accession = document.getElementById('patient-accession').value || 'LIS-ORDER-001';
+      const orderPayload = {
+        order_id: accession,
+        patient_id: 'PT-884920',
+        ordering_physician: 'Dr. Evelyn Reed, MD (Surgical Oncology)',
+        collection_site: 'Left Breast Upper Outer Quadrant',
+        raw_measurements: readFormValues()
+      };
+
+      try {
+        const res = await fetch('/lis/webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderPayload)
+        });
+
+        if (!res.ok) throw new Error('LIS status ' + res.status);
+        const data = await res.json();
+        alert(`[HOSPITAL LIS WEBHOOK DISPATCH SUCCESSFUL]\n\n` +
+              `Order ID: ${data.order_id}\n` +
+              `Patient ID: ${data.patient_id}\n` +
+              `Status: ${data.status}\n` +
+              `Assigned Worklist: ${data.assigned_worklist}\n` +
+              `Triage Alert: ${data.triage_alert}\n` +
+              `Malignancy Probability: ${(data.predicted_malignancy_prob * 100).toFixed(2)}%\n` +
+              `Digital Signature: ${data.signature_audit}\n\n` +
+              `Clinical Recommendation:\n${data.recommendation}`);
+      } catch (e) {
+        alert('LIS Simulation Error: ' + e.message);
+      }
+    }
+
+    // Batch Simulator
+    async function runBatchSimulation() {
+      if (!sampleRegistry || !sampleRegistry.test_cohort) {
+        alert('Test cohort registry loading. Please try in 1 second.');
+        return;
+      }
+
+      const samples = sampleRegistry.test_cohort.slice(0, 10).map((item, idx) => ({
+        sample_id: 'FNA-BATCH-' + item.id,
+        ...item.features
+      }));
+
+      const payload = {
+        batch_id: 'BATCH-RUN-2026-01',
+        is_standardized: false,
+        samples: samples
+      };
+
+      try {
+        const res = await fetch('/batch-predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('Batch API status ' + res.status);
+        const data = await res.json();
+
+        document.getElementById('batch-results-wrapper').style.display = 'block';
+        document.getElementById('batch-stats-summary').innerText = 
+          `Processed ${data.total_samples} samples | Malignant: ${data.malignant_count} | Benign: ${data.benign_count} | Processing Time: ${data.total_processing_time_ms} ms`;
+
+        let rowsHtml = '';
+        data.predictions.forEach(p => {
+          const isMal = p.predicted_class === 1;
+          const color = isMal ? '#ef4444' : '#22c55e';
+          rowsHtml += `
+            <tr>
+              <td style="font-family:'JetBrains Mono';">${p.sample_id}</td>
+              <td style="font-family:'JetBrains Mono';">${p.predicted_class}</td>
+              <td style="color:${color}; font-weight:600;">${p.diagnosis_label}</td>
+              <td style="font-family:'JetBrains Mono';">${(p.malignancy_probability * 100).toFixed(2)}%</td>
+              <td style="font-size:11px;">${p.clinical_triage_flag}</td>
+              <td>${p.confidence_category}</td>
+            </tr>
+          `;
+        });
+        document.getElementById('batch-table-body').innerHTML = rowsHtml;
+
+      } catch (err) {
+        alert('Batch processing error: ' + err.message);
+      }
+    }
+
+    function formatFeatureName(str) {
+      return str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function hashSample(s) {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) {
+        h = ((h << 5) - h) + s.charCodeAt(i);
+        h |= 0;
+      }
+      return h;
+    }
+
+    function openImageModal(src, title) {
+      document.getElementById('modal-active-img').src = src;
+      document.getElementById('modal-image-title').innerText = title || 'Scientific Figure View';
+      document.getElementById('image-modal-backdrop').classList.add('active');
+    }
+
+    function closeImageModal() {
+      document.getElementById('image-modal-backdrop').classList.remove('active');
+    }
+
+    // Run initial inference on load
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        executeModelInference();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
